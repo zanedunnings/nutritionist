@@ -122,9 +122,29 @@ Also include a list of groceries and what I should do for prep days.
 Assistant:
 """
 
+from replit import db
+from datetime import datetime, timedelta
+
+def get_week_key():
+    # Get current date
+    today = datetime.now()
+    # Find the most recent Sunday
+    sunday = today - timedelta(days=today.weekday() + 1)
+    # Format as YYYY-MM-DD
+    return f"meal_plan_{sunday.strftime('%Y-%m-%d')}"
+
 # 4. Call the Claude API with the above prompt
 response = call_claude(prompt_text)
 
-# 5. Print out the plan
-print("Claude's Meal Plan:\n")
+# 5. Store the response in the database with the week's date as key
+week_key = get_week_key()
+db[week_key] = response
+
+# 6. Print out the plan
+print(f"Claude's Meal Plan for week starting {week_key[10:]}:\n")
 print(response)
+
+# Optional: Print all stored meal plans
+print("\nStored meal plans:")
+for key in db.prefix("meal_plan_"):
+    print(f"- Week of {key[10:]}")
