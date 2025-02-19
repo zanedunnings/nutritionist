@@ -133,8 +133,43 @@ def fetch_meal_plan():
         response = db[week_key]
     return response
 
+def send_weekly_plan_sms(meal_plan):
+    """Send weekly meal plan via SMS using Twilio"""
+    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+    from_number = os.environ.get('TWILIO_PHONE_NUMBER')
+    to_number = os.environ.get('TARGET_PHONE_NUMBER')
+    
+    if not all([account_sid, auth_token, from_number, to_number]):
+        print("Twilio credentials not found in environment variables")
+        return False
+    
+    from twilio.rest import Client
+    client = Client(account_sid, auth_token)
+    
+    try:
+        # Format message for SMS
+        message = f"Weekly Meal Plan ({get_week_key()[10:]}):\n\n"
+        message += meal_plan[:1500]  # Truncate if too long
+        
+        client.messages.create(
+            body=message,
+            from_=from_number,
+            to=to_number
+        )
+        return True
+    except Exception as e:
+        print(f"Error sending SMS: {e}")
+        return False
+
 # Run the script
 if __name__ == "__main__":
     meal_plan = fetch_meal_plan()
     print(f"Meal Plan for the week starting {get_week_key()[10:]}:\n")
     print(meal_plan)
+    
+    # Send SMS if credentials are configured
+    if send_weekly_plan_sms(meal_plan):
+        print("\nMeal plan sent via SMS successfully!")
+    else:
+        print("\nFailed to send SMS")
