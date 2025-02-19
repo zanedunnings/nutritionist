@@ -3,7 +3,7 @@ import requests
 import json
 from replit import db
 from datetime import datetime, timedelta
-
+import time
 # Claude API Key
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
@@ -163,6 +163,7 @@ def send_weekly_plan_sms(meal_plan):
                 from_=from_number,
                 to=to_number
             )
+            time.sleep(.5)
         
         return True
     except Exception as e:
