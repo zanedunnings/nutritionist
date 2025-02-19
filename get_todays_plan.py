@@ -78,11 +78,18 @@ def send_meal_plan_sms(phone_number, message):
     
     client = Client(account_sid, auth_token)
     try:
-        client.messages.create(
-            body=message,
-            from_=from_number,
-            to=phone_number
-        )
+        # Split message into chunks (max 1600 chars per SMS)
+        chunk_size = 1500
+        message_chunks = [message[i:i+chunk_size] for i in range(0, len(message), chunk_size)]
+        
+        # Send each chunk with a counter
+        for i, chunk in enumerate(message_chunks, 1):
+            prefix = f"({i}/{len(message_chunks)}) "
+            client.messages.create(
+                body=prefix + chunk,
+                from_=from_number,
+                to=phone_number
+            )
         return True
     except Exception as e:
         print(f"Error sending SMS: {e}")

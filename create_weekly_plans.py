@@ -148,15 +148,22 @@ def send_weekly_plan_sms(meal_plan):
     client = Client(account_sid, auth_token)
     
     try:
-        # Format message for SMS
-        message = f"Weekly Meal Plan ({get_week_key()[10:]}):\n\n"
-        message += meal_plan[:1500]  # Truncate if too long
+        # Format initial message
+        full_message = f"Weekly Meal Plan ({get_week_key()[10:]}):\n\n{meal_plan}"
         
-        client.messages.create(
-            body=message,
-            from_=from_number,
-            to=to_number
-        )
+        # Split message into chunks (max 1600 chars per SMS)
+        chunk_size = 1500
+        message_chunks = [full_message[i:i+chunk_size] for i in range(0, len(full_message), chunk_size)]
+        
+        # Send each chunk with a counter
+        for i, chunk in enumerate(message_chunks, 1):
+            prefix = f"({i}/{len(message_chunks)}) "
+            client.messages.create(
+                body=prefix + chunk,
+                from_=from_number,
+                to=to_number
+            )
+        
         return True
     except Exception as e:
         print(f"Error sending SMS: {e}")
