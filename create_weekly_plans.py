@@ -1,19 +1,14 @@
 import os
 import requests
 import json
-
 from replit import db
 from datetime import datetime, timedelta
 
-# 1. Claude API Key
+# Claude API Key
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
-
-# 2. Claude API function
-def call_claude(prompt,
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=8000,
-                temperature=0.7):
+# Claude API function
+def call_claude(prompt, model="claude-3-5-sonnet-20241022", max_tokens=8000, temperature=0.7):
     url = "https://api.anthropic.com/v1/messages"
     headers = {
         "x-api-key": ANTHROPIC_API_KEY,
@@ -21,34 +16,22 @@ def call_claude(prompt,
         "Content-Type": "application/json"
     }
 
-    # Format the messages according to the Messages API structure
     data = {
         "model": model,
         "max_tokens": max_tokens,
         "temperature": temperature,
-        "messages": [{
-            "role": "user",
-            "content": prompt
-        }]
+        "messages": [{"role": "user", "content": prompt}]
     }
 
     try:
         response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
         result = response.json()
-
-        # Extract the content from the response
-        if 'content' in result and len(result['content']) > 0:
-            return result['content'][0]['text']
-        else:
-            return "No content received from the API"
-
+        return result.get("content", [{}])[0].get("text", "No content received")
     except requests.exceptions.RequestException as e:
         print(f"Error calling Claude API: {e}")
         return str(e)
 
-
-# 3. The Prompt
 prompt_text = """
 System:
 You are a nutritionist AI.
@@ -127,104 +110,31 @@ Also include a list of groceries and what I should do for prep days. ENSURE YOU 
 Assistant:
 """
 
-
+# Generate the key for the current week's meal plan
 def get_week_key():
-    # Get current date
     today = datetime.now()
-    # Find the most recent Sunday
-    sunday = today - timedelta(days=today.weekday() + 1)
-    # Format as YYYY-MM-DD
+    sunday = today - timedelta(days=today.weekday() + 1)  # Find the most recent Sunday
     return f"meal_plan_{sunday.strftime('%Y-%m-%d')}"
 
+# Fetch meal plan
+def fetch_meal_plan():
+    week_key = get_week_key()
 
-# 4. Call the Claude API with the above prompt
-# response = call_claude(prompt_text)
+    if week_key in db:
+        print(f"Using stored meal plan for week {week_key[10:]}")
+        return db[week_key]
 
-# 5. Store the response in the database with the week's date as key
-week_key = get_week_key()
-# db[week_key] = response
-response = db[week_key]
+    print("Fetching a new meal plan from Claude...")
+    response = ""
+    if week_key not in db:
+        response = call_claude(prompt_text)
+        db[week_key] = response  # Store in the database
+    else:
+        response = db[week_key]
+    return response
 
-# 6. Print out the plan
-print(f"Claude's Meal Plan for week starting {week_key[10:]}:\n")
-print(response)
-
-# Optional: Print all stored meal plans
-print("\nStored meal plans:")
-for key in db.prefix("meal_plan_"):
-    print(f"- Week of {key[10:]}")
-
-
-import re
-
-def parse_meal_plan(raw_text):
-    """ Parses the raw text and extracts meal plans by day. """
-    meal_plan = {}
-    current_day = None
-    current_meals = {}
-    in_meal_plan_section = False  # Track when we've reached "MEAL PLAN"
-
-    lines = raw_text.split("\n")
-
-    for line in lines:
-        line = line.strip()
-
-        # Start capturing meal plan once we reach "MEAL PLAN:"
-        if line.startswith("MEAL PLAN:"):
-            in_meal_plan_section = True
-            continue
-
-        # Ignore everything before "MEAL PLAN"
-        if not in_meal_plan_section:
-            continue
-
-        # Detect day headers (e.g., "SUNDAY (Prep Day):", "MONDAY:")
-        day_match = re.match(r"^(SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY)(?:\s*\(.*?\))?:?$", line, re.IGNORECASE)
-        if day_match:
-            if current_day:  # Save previous day's data
-                meal_plan[current_day] = current_meals
-            current_day = day_match.group(1).capitalize()
-            current_meals = {}
-            continue
-
-        # Detect meal entries (e.g., "Breakfast: Egg white omelette")
-        meal_match = re.match(r"^(Breakfast|AM Snack|Lunch|PM Snack|Dinner):\s*(.*)$", line, re.IGNORECASE)
-        if meal_match and current_day:
-            meal_type = meal_match.group(1)
-            meal_desc = meal_match.group(2)
-            current_meals[meal_type] = meal_desc
-            continue
-
-        # Detect "Prep:" section under a specific day and collect multi-line instructions
-        if line.startswith("Prep:") and current_day:
-            prep_steps = []
-            for prep_line in lines[lines.index(line) + 1:]:
-                prep_line = prep_line.strip()
-                if not prep_line or re.match(r"^(SUNDAY|MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY)", prep_line, re.IGNORECASE):
-                    break  # Stop when reaching the next day's section
-                prep_steps.append(prep_line)
-            current_meals["Prep Instructions"] = prep_steps
-
-    # Save the last day's data
-    if current_day:
-        meal_plan[current_day] = current_meals
-
-    return meal_plan
-
-
-def get_meal_plan_for_day(raw_text, day):
-    """ Returns the meal plan for a specific day of the week. """
-    meal_plan = parse_meal_plan(raw_text)
-    day = day.capitalize()
-    return meal_plan.get(day, {"error": f"No meal plan found for {day}"})
-
-
-# Example Usage
-raw_text = response
-today = datetime.now().strftime("%A")
-
-# day = today.weekday()
-meal_plan = get_meal_plan_for_day(raw_text, today)
-print(meal_plan)
-
-
+# Run the script
+if __name__ == "__main__":
+    meal_plan = fetch_meal_plan()
+    print(f"Meal Plan for the week starting {get_week_key()[10:]}:\n")
+    print(meal_plan)
