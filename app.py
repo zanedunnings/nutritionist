@@ -1,34 +1,53 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify, render_template
 from twilio.twiml.messaging_response import MessagingResponse
 from replit import db
 import os
 import anthropic
 from datetime import datetime
-from get_todays_plan import parse_meal_plan, send_meal_plan_sms
-from create_weekly_plans import get_week_key
+import create_weekly_plans
+import get_todays_plan
+from planner import handle_meal_interaction, get_current_context
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    """Main page showing current meal plan information"""
+    context = get_current_context()
+    return render_template('index.html', context=context)
 
+@app.route('/api/get_today_plan', methods=['GET'])
+def get_today_plan():
+    """API endpoint to get today's meal plan"""
+    today_plan = get_todays_plan.get_meal_plan_for_today()
+    return jsonify(today_plan)
 
-def get_current_context():
-    """Get the current meal plan context if it exists"""
-    week_key = get_week_key()
-    if week_key not in db:
-        return None
+@app.route('/api/get_weekly_plan', methods=['GET'])
+def get_weekly_plan():
+    """API endpoint to get the full weekly meal plan"""
+    week_key = create_weekly_plans.get_week_key()
+    if week_key in db:
+        raw_text = db[week_key]
+        meal_plan = get_todays_plan.parse_meal_plan(raw_text)
+        return jsonify(meal_plan)
+    return jsonify({"error": "No meal plan found for this week"})
 
-    current_plan = parse_meal_plan(db[week_key])
-    today = datetime.now().strftime("%A")
-
-    return {
-        'week_key': week_key,
-        'current_plan': current_plan,
-        'today_plan': current_plan.get(today, {}),
-        'day': today
-    }
+@app.route('/api/create_weekly_plan', methods=['POST'])
+def create_weekly_plan():
+    """API endpoint to generate a new weekly meal plan"""
+    meal_plan = create_weekly_plans.fetch_meal_plan()
+    # Send SMS notification if configured
+    if request.args.get('send_sms', 'false').lower() == 'true':
+        phone_number = os.environ.get('TARGET_PHONE_NUMBER')
+        if phone_number and create_weekly_plans.send_weekly_plan_sms(meal_plan):
+            return jsonify({"status": "success", "message": "Meal plan created and SMS sent"})
+        else:
+            return jsonify({"status": "partial", "message": "Meal plan created but SMS failed"})
+    return jsonify({"status": "success", "message": "Meal plan created"})
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    """Webhook for handling Twilio SMS interactions"""
     # Get incoming message details from Twilio's request
     incoming_msg = request.values.get('Body', '').strip()
     phone_number = request.values.get('From', '')
@@ -37,67 +56,21 @@ def webhook():
     resp = MessagingResponse()
 
     try:
-        # Get current context
-        context = get_current_context()
-        if not context:
-            resp.message("I couldn't find your current meal plan. Please make sure one is generated first.")
-            return str(resp)
-
         # Get Claude API key
         claude_api_key = os.environ.get('CLAUDE_API_KEY')
         if not claude_api_key:
             resp.message("Sorry, I'm not configured correctly right now. Please try again later.")
             return str(resp)
 
-        # Create prompt for Claude
-        prompt = f"""Current meal plan for {context['day']}:
-{context['today_plan']}
-
-User message: {incoming_msg}
-
-Please help with this meal plan request. You can:
-1. Suggest alternative meals
-2. Provide recipes and cooking instructions
-3. Handle meal substitutions and recommend adjustments
-4. Answer questions about the meal plan
-
-Keep responses concise and actionable since they'll be sent via SMS.
-
-If the user's request isn't related to these categories, politely explain what you can help with.
-
-If this is a meal substitution, include "SUBSTITUTION_RECORDED" at the start of your response so I know to update the database.
-"""
-
-        # Call Claude API
-        client = anthropic.Client(api_key=claude_api_key)
-        response = client.messages.create(
-            model="claude-3-sonnet-20240229",
-            max_tokens=500,
-            temperature=0.7,
-            messages=[{"role": "user", "content": prompt}]
-        )
-
-        response_text = response.content[0].text
-
-        # Handle substitution recording
-        if response_text.startswith("SUBSTITUTION_RECORDED"):
-            response_text = response_text.replace("SUBSTITUTION_RECORDED", "").strip()
-            modifications_key = f"{context['week_key']}_modifications"
-            modifications = db.get(modifications_key, [])
-            modifications.append({
-                'day': context['day'],
-                'message': incoming_msg,
-                'timestamp': datetime.now().isoformat(),
-                'response': response_text
-            })
-            db[modifications_key] = modifications
-
-        # Send response back through Twilio
-        resp.message(response_text)
-        return str(resp)
+        # Handle the meal interaction
+        if handle_meal_interaction(phone_number, incoming_msg, claude_api_key):
+            return str(resp)
+        else:
+            resp.message("Sorry, I couldn't process your request.")
+            return str(resp)
 
     except Exception as e:
-        resp.message("Sorry, I encountered an error. Please try again.")
+        resp.message(f"Sorry, I encountered an error: {str(e)}")
         return str(resp)
 
 if __name__ == '__main__':
