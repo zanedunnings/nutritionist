@@ -439,44 +439,70 @@ def api_today():
     try:
         week_key = get_week_key()
         today = datetime.now().strftime("%A").lower()
+        print(f"Accessing today's plan for {today} from key: {week_key}")
 
         if week_key not in db:
+            print(f"Key {week_key} not found")
             return jsonify({"status": "error", "message": "No meal plan found"})
 
-        # Get the stored meal plan data and make it serializable
+        # Get the stored meal plan data
+        meal_plan_data = db[week_key]
+        print(f"Data type: {type(meal_plan_data)}")
+
+        # Force conversion to Python standard types
         try:
-            meal_plan_data = db[week_key]
-            # Force conversion to Python standard types
-            converted_data = convert_replit_objects(meal_plan_data)
+            # Convert data to standard Python types
+            converted_data = to_primitive(meal_plan_data)
+            print(f"Converted data type: {type(converted_data)}")
 
             # Verify it's serializable by doing a round-trip through JSON
-            serialized = json.dumps(converted_data)
-            meal_plan = json.loads(serialized)
+            # This will break if there are any non-serializable objects left
+            if isinstance(converted_data, str):
+                meal_plan = json.loads(converted_data)
+            else:
+                # Serialize and deserialize to ensure clean JSON
+                serialized = json.dumps(converted_data)
+                meal_plan = json.loads(serialized)
+
+            print("Data successfully converted and serialized")
         except Exception as e:
-            print(f"Error processing meal plan: {str(e)}")
+            print(f"Error during conversion: {str(e)}")
             traceback.print_exc()
 
             # Last resort: try to store as string and reparse
             try:
+                print("Attempting to store and reparse as string")
                 # Store as string in DB
-                db[week_key] = json.dumps(convert_replit_objects(meal_plan_data))
+                db[week_key] = json.dumps(to_primitive(meal_plan_data))
                 # Read it back
                 meal_plan = json.loads(db[week_key])
+                print("String storage and reparsing successful")
             except Exception as e2:
+                print(f"String storage attempt failed: {str(e2)}")
                 return jsonify({
-                    "status": "error", 
+                    "status": "error",
                     "message": f"Could not process meal plan data: {str(e)} then {str(e2)}"
                 }), 500
 
         # Check if we have a valid meal plan structure
         if "meal_plan" not in meal_plan:
-            return jsonify({"status": "error", "message": "Invalid meal plan structure"})
+            print("'meal_plan' key not found")
+            return jsonify({"status": "error", "message": "Invalid meal plan structure: 'meal_plan' key missing"})
+
+        if "daily_plans" not in meal_plan["meal_plan"]:
+            print("'daily_plans' key not found in meal_plan")
+            return jsonify({"status": "error", "message": "Invalid meal plan structure: 'daily_plans' key missing"})
 
         # Check if today's plan exists
         if today not in meal_plan["meal_plan"]["daily_plans"]:
+            print(f"No meal plan found for {today}")
             return jsonify({"status": "error", "message": f"No meal plan found for {today}"})
 
-        return jsonify({"status": "success", "plan": meal_plan["meal_plan"]["daily_plans"][today]})
+        # Get today's plan and ensure it's properly serialized
+        today_plan = meal_plan["meal_plan"]["daily_plans"][today]
+        print(f"Successfully retrieved today's plan for {today}")
+        
+        return jsonify({"status": "success", "plan": today_plan})
 
     except Exception as e:
         print(f"Unhandled error in api_today: {str(e)}")
