@@ -810,13 +810,18 @@
         function loadWeeklyPlan() {
             // Skip if already loaded
             if (weeklyPlan) return;
-            
-            // Show loading indicators
-            document.getElementById('loading-weekly-overview').classList.add('active');
-            document.getElementById('loading-daily-meals').classList.add('active');
-            document.getElementById('loading-meal-prep').classList.add('active');
-            document.getElementById('loading-grocery').classList.add('active');
-            
+
+            // Show loading indicators with null checks
+            const loadingOverview = document.getElementById('loading-weekly-overview');
+            const loadingDailyMeals = document.getElementById('loading-daily-meals');
+            const loadingMealPrep = document.getElementById('loading-meal-prep');
+            const loadingGrocery = document.getElementById('loading-grocery');
+
+            if (loadingOverview) loadingOverview.classList.add('active');
+            if (loadingDailyMeals) loadingDailyMeals.classList.add('active');
+            if (loadingMealPrep) loadingMealPrep.classList.add('active');
+            if (loadingGrocery) loadingGrocery.classList.add('active');
+
             // Fetch data
             fetch('/api/weekly')
                 .then(response => response.json())
@@ -827,32 +832,32 @@
                     } else {
                         showToast('Error: ' + data.message);
                     }
-                    
-                    // Hide loading indicators
-                    document.getElementById('loading-weekly-overview').classList.remove('active');
-                    document.getElementById('loading-daily-meals').classList.remove('active');
-                    document.getElementById('loading-meal-prep').classList.remove('active');
-                    document.getElementById('loading-grocery').classList.remove('active');
+
+                    // Hide loading indicators with null checks
+                    if (loadingOverview) loadingOverview.classList.remove('active');
+                    if (loadingDailyMeals) loadingDailyMeals.classList.remove('active');
+                    if (loadingMealPrep) loadingMealPrep.classList.remove('active');
+                    if (loadingGrocery) loadingGrocery.classList.remove('active');
                 })
                 .catch(error => {
                     showToast('Error: ' + error.message);
-                    
-                    // Hide loading indicators
-                    document.getElementById('loading-weekly-overview').classList.remove('active');
-                    document.getElementById('loading-daily-meals').classList.remove('active');
-                    document.getElementById('loading-meal-prep').classList.remove('active');
-                    document.getElementById('loading-grocery').classList.remove('active');
+
+                    // Hide loading indicators with null checks
+                    if (loadingOverview) loadingOverview.classList.remove('active');
+                    if (loadingDailyMeals) loadingDailyMeals.classList.remove('active');
+                    if (loadingMealPrep) loadingMealPrep.classList.remove('active');
+                    if (loadingGrocery) loadingGrocery.classList.remove('active');
                 });
         }
         
-        // Load today's plan
         function loadTodayPlan() {
             // Skip if already loaded
             if (todayPlan) return;
-            
-            // Show loading indicator
-            document.getElementById('loading-today').classList.add('active');
-            
+
+            // Show loading indicator with null check
+            const loadingToday = document.getElementById('loading-today');
+            if (loadingToday) loadingToday.classList.add('active');
+
             // Fetch data
             fetch('/api/today')
                 .then(response => response.json())
@@ -863,15 +868,15 @@
                     } else {
                         showToast('Error: ' + data.message);
                     }
-                    
-                    // Hide loading indicator
-                    document.getElementById('loading-today').classList.remove('active');
+
+                    // Hide loading indicator with null check
+                    if (loadingToday) loadingToday.classList.remove('active');
                 })
                 .catch(error => {
                     showToast('Error: ' + error.message);
-                    
-                    // Hide loading indicator
-                    document.getElementById('loading-today').classList.remove('active');
+
+                    // Hide loading indicator with null check
+                    if (loadingToday) loadingToday.classList.remove('active');
                 });
         }
         
