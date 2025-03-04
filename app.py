@@ -541,8 +541,239 @@ def api_generate():
 
 @app.route('/api/chat', methods=['POST'])
 def api_chat():
-    return jsonify({"status": "success", "message": "Not implemented yet :)"})
+    """API endpoint for chat functionality"""
+    try:
+        # Get request data
+        data = request.json
+        if not data or 'message' not in data:
+            return jsonify({"status": "error", "message": "No message provided"}), 400
 
+        message = data['message']
+        context = data.get('context', 'general')
+        history = data.get('history', [])
+
+        # Get current meal plan
+        week_key = get_week_key()
+
+        if week_key not in db:
+            return jsonify({"status": "error", "message": "No meal plan found"}), 404
+
+        # Get meal plan data with error handling
+        try:
+            meal_plan_data = db[week_key]
+
+            if isinstance(meal_plan_data, str):
+                try:
+                    meal_plan = json.loads(meal_plan_data)
+                except json.JSONDecodeError:
+                    return jsonify({"status": "error", "message": "Invalid meal plan data"}), 500
+            else:
+                # For Replit ObservedDict/ObservedList objects
+                try:
+                    # Convert to regular Python objects
+                    meal_plan = json.loads(json.dumps(dict(meal_plan_data)))
+                except:
+                    return jsonify({"status": "error", "message": "Failed to process meal plan data"}), 500
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"Error accessing meal plan: {str(e)}"}), 500
+
+        # Check meal plan structure
+        if "meal_plan" not in meal_plan:
+            return jsonify({"status": "error", "message": "Invalid meal plan structure"}), 500
+
+        # Build prompt for Claude based on context
+        prompt = ""
+
+        # Today's meal plan context
+        today = datetime.now().strftime("%A").lower()
+
+        if today not in meal_plan["meal_plan"]["daily_plans"]:
+            return jsonify({"status": "error", "message": f"No meal plan found for {today}"}), 404
+
+        today_plan = meal_plan["meal_plan"]["daily_plans"][today]
+
+        # Format the prompt for today's plan
+        prompt = build_today_prompt(today_plan, today, message, meal_plan["meal_plan"])
+
+
+        # Call Anthropic API
+        response = call_anthropic(prompt)
+
+        # Check for plan modification
+        plan_updated = False
+        if "PLAN_UPDATE:" in response:
+            # Process plan update
+            plan_updated = process_plan_update(meal_plan, response, context, today if context == "today" else None)
+
+            # Clean response to remove the update marker
+            response = response.replace("PLAN_UPDATE:", "").strip()
+
+        return jsonify({
+            "status": "success",
+            "message": response,
+            "plan_updated": plan_updated
+        })
+
+    except Exception as e:
+        print(f"Error in chat endpoint: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"status": "error", "message": f"An error occurred: {str(e)}"}), 500
+
+def build_today_prompt(today_plan, day, message, full_plan):
+    """Build a prompt for today's meal plan context"""
+    prompt = f"""You are MAGI, an AI assistant for a meal planning application in the style of NERV terminals from Evangelion.
+
+Current meal plan for {day.capitalize()}:
+
+BREAKFAST:
+{today_plan['breakfast']['description']}
+Protein: {today_plan['breakfast']['protein']}g, Carbs: {today_plan['breakfast']['carbs']}g, Fats: {today_plan['breakfast']['fats']}g, Calories: {today_plan['breakfast']['calories']}
+
+AM SNACK:
+{today_plan['am_snack']['description']}
+Protein: {today_plan['am_snack']['protein']}g, Carbs: {today_plan['am_snack']['carbs']}g, Fats: {today_plan['am_snack']['fats']}g, Calories: {today_plan['am_snack']['calories']}
+
+LUNCH:
+{today_plan['lunch']['description']}
+Protein: {today_plan['lunch']['protein']}g, Carbs: {today_plan['lunch']['carbs']}g, Fats: {today_plan['lunch']['fats']}g, Calories: {today_plan['lunch']['calories']}
+
+PM SNACK:
+{today_plan['pm_snack']['description']}
+Protein: {today_plan['pm_snack']['protein']}g, Carbs: {today_plan['pm_snack']['carbs']}g, Fats: {today_plan['pm_snack']['fats']}g, Calories: {today_plan['pm_snack']['calories']}
+
+DINNER:
+{today_plan['dinner']['description']}
+Protein: {today_plan['dinner']['protein']}g, Carbs: {today_plan['dinner']['carbs']}g, Fats: {today_plan['dinner']['fats']}g, Calories: {today_plan['dinner']['calories']}
+
+USER QUERY: {message}
+
+You are an assistant helping with this meal plan. You can:
+1. Answer questions about the meals, recipes, ingredients, or cooking instructions
+2. Suggest modifications or alternatives to meals
+3. Provide nutritional information and advice
+
+If the user wants to modify the plan (like changing a meal or adjusting portions), preface your response with "PLAN_UPDATE:" (on the same line as your response).
+
+Keep your responses concise and in the style of a NERV terminal from Evangelion (technical, precise, somewhat formal).
+"""
+
+    return prompt
+
+def build_weekly_prompt(meal_plan, message):
+    """Build a prompt for weekly meal plan context"""
+    # Get overview information
+    overview = meal_plan.get("overview", {})
+    calorie_goal = overview.get("calorie_goal", "Not specified")
+    protein_goal = overview.get("protein_goal", "Not specified")
+
+    # Get meal prep information
+    meal_prep = meal_plan.get("meal_prep", {})
+    sunday_prep = meal_prep.get("sunday", "Not specified")
+    wednesday_prep = meal_prep.get("wednesday", "Not specified")
+
+    prompt = f"""You are MAGI, an AI assistant for a meal planning application in the style of NERV terminals from Evangelion.
+
+WEEKLY MEAL PLAN OVERVIEW:
+- Calorie Goal: {calorie_goal}
+- Protein Goal: {protein_goal}
+- Meal Prep (Sunday): {sunday_prep[:200]}...
+- Meal Prep (Wednesday): {wednesday_prep[:200]}...
+
+USER QUERY: {message}
+
+You are an assistant helping with this weekly meal plan. You can:
+1. Answer questions about the overall meal structure, meal prep, or grocery planning
+2. Provide advice on meal preparation, batch cooking, or food storage
+3. Suggest modifications to the meal plan structure
+
+If the user wants to modify the plan (like changing meal prep instructions or grocery lists), preface your response with "PLAN_UPDATE:" (on the same line as your response).
+
+Keep your responses concise and in the style of a NERV terminal from Evangelion (technical, precise, somewhat formal).
+"""
+
+    return prompt
+
+def build_general_prompt(meal_plan, message):
+    """Build a prompt for general meal plan context"""
+    overview = meal_plan.get("overview", {})
+    calorie_goal = overview.get("calorie_goal", "Not specified")
+    protein_goal = overview.get("protein_goal", "Not specified")
+
+    prompt = f"""You are MAGI, an AI assistant for a meal planning application in the style of NERV terminals from Evangelion.
+
+NUTRITIONAL PROGRAM PARAMETERS:
+- Calorie Goal: {calorie_goal}
+- Protein Goal: {protein_goal}
+
+USER QUERY: {message}
+
+You are an assistant helping with nutritional planning. You can:
+1. Provide general nutrition advice
+2. Answer questions about dietary concepts, meal planning, or food preparation
+3. Offer general suggestions for nutritional optimization
+
+Keep your responses concise and in the style of a NERV terminal from Evangelion (technical, precise, somewhat formal).
+"""
+
+    return prompt
+
+def call_anthropic(prompt):
+    """Call Anthropic API to get response from Claude"""
+    try:
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            return "ERROR: API key not configured. Contact system administrator."
+
+        client = anthropic.Client(api_key=api_key)
+        response = client.messages.create(
+            model="claude-3-sonnet-20240229",
+            max_tokens=1000,
+            temperature=0.7,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        return response.content[0].text
+    except Exception as e:
+        print(f"Error calling Anthropic API: {str(e)}")
+        return f"ERROR: Communication failure with language model. Details: {str(e)}"
+
+def process_plan_update(meal_plan, response, context, day=None):
+    """Process a plan update request"""
+    try:
+        # Record the modification request
+        week_key = get_week_key()
+        modifications_key = f"{week_key}_modifications"
+
+        if modifications_key not in db:
+            db[modifications_key] = []
+
+        modifications = db[modifications_key]
+
+        # Add the new modification
+        modification = {
+            "timestamp": datetime.now().isoformat(),
+            "context": context,
+            "day": day,
+            "response": response
+        }
+
+        modifications.append(modification)
+        db[modifications_key] = modifications
+
+        # For now, we're just tracking the modifications
+        # To actually implement changes to the meal plan, you would need to 
+        # parse the response and modify the meal_plan structure accordingly
+
+        # In a full implementation, you would:
+        # 1. Parse the response to determine what changes are needed
+        # 2. Update the appropriate part of the meal_plan structure
+        # 3. Save the updated meal_plan back to the database
+
+        return True
+    except Exception as e:
+        print(f"Error processing plan update: {str(e)}")
+        return False
 
 # ---------- Run App ----------
 
