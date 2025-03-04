@@ -283,6 +283,8 @@ def get_today_meal_plan():
 
     return meal_plan["meal_plan"]["daily_plans"][today]
 
+from replit.database import to_primitive
+
 def convert_observed_dict(obj):
     """
     Recursively convert ObservedDict objects to regular dictionaries.
@@ -305,6 +307,9 @@ def get_weekly_meal_plan():
     # Get the stored meal plan data
     meal_plan_data = db[week_key]
 
+    prim = to_primitive(meal_plan_data)
+    print(prim)
+
     # If it's a string, try to parse it as JSON
     if isinstance(meal_plan_data, str):
         try:
@@ -313,7 +318,7 @@ def get_weekly_meal_plan():
             return None
     else:
         # Convert the ObservedDict to a regular dict (recursively)
-        meal_plan = convert_observed_dict(meal_plan_data)
+        meal_plan = to_primitive(meal_plan_data)
 
     # Check if we have a valid meal plan structure
     if "meal_plan" not in meal_plan:
@@ -389,12 +394,12 @@ def api_weekly():
         # Force conversion to Python standard types
         try:
             # Convert data to standard Python types
-            converted_data = convert_replit_objects(meal_plan_data)
+            converted_data = to_primitive(meal_plan_data)
+            print(f"Data type: {type(converted_data)}")
 
             # Verify it's serializable by doing a round-trip through JSON
             # This will break if there are any non-serializable objects left
-            serialized = json.dumps(converted_data)
-            meal_plan = json.loads(serialized)
+            meal_plan = json.loads(converted_data)
 
             print("Data successfully converted and serialized")
         except Exception as e:
@@ -405,7 +410,7 @@ def api_weekly():
             try:
                 print("Attempting to store and reparse as string")
                 # Store as string in DB
-                db[week_key] = json.dumps(convert_replit_objects(meal_plan_data))
+                db[week_key] = json.dumps(to_primitive(meal_plan_data))
                 # Read it back
                 meal_plan = json.loads(db[week_key])
                 print("String storage and reparsing successful")
