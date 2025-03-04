@@ -141,18 +141,18 @@ def get_week_key():
 # response = call_claude(prompt_text)
 
 # 5. Store the response in the database with the week's date as key
-week_key = get_week_key()
-# db[week_key] = response
-response = db[week_key]
+# week_key = get_week_key()
+# # db[week_key] = response
+# response = db[week_key]
 
-# 6. Print out the plan
-print(f"Claude's Meal Plan for week starting {week_key[10:]}:\n")
-print(response)
+# # 6. Print out the plan
+# print(f"Claude's Meal Plan for week starting {week_key[10:]}:\n")
+# print(response)
 
-# Optional: Print all stored meal plans
-print("\nStored meal plans:")
-for key in db.prefix("meal_plan_"):
-    print(f"- Week of {key[10:]}")
+# # Optional: Print all stored meal plans
+# print("\nStored meal plans:")
+# for key in db.prefix("meal_plan_"):
+#     print(f"- Week of {key[10:]}")
 
 
 import re
@@ -219,12 +219,15 @@ def get_meal_plan_for_day(raw_text, day):
     return meal_plan.get(day, {"error": f"No meal plan found for {day}"})
 
 
-# Example Usage
-raw_text = response
-today = datetime.now().strftime("%A")
+# # Example Usage
+# raw_text = response
+# today = datetime.now().strftime("%A")
 
-# day = today.weekday()
-meal_plan = get_meal_plan_for_day(raw_text, today)
-print(meal_plan)
+# # day = today.weekday()
+# meal_plan = get_meal_plan_for_day(raw_text, today)
+# print(meal_plan)
 
+from planner import handle_meal_interaction
+week_key = get_week_key()
 
+handle_meal_interaction("3365084443", "How do I make lunch?", str(ANTHROPIC_API_KEY))

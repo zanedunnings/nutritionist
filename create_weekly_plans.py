@@ -127,6 +127,7 @@ def fetch_meal_plan():
     print("Fetching a new meal plan from Claude...")
     response = ""
     if week_key not in db:
+        print(week_key)
         response = call_claude(prompt_text)
         db[week_key] = response  # Store in the database
     else:

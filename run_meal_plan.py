@@ -10,7 +10,11 @@ def should_create_weekly_plan():
 if __name__ == "__main__":
     if should_create_weekly_plan():
         print("It's Sunday! Creating weekly meal plan...")
-        create_weekly_plans.fetch_meal_plan()
+        meal_plan = create_weekly_plans.fetch_meal_plan()
+        if create_weekly_plans.send_weekly_plan_sms(meal_plan):
+            print("\nMeal plan sent via SMS successfully!")
+        else:
+            print("\nFailed to send SMS")
     else:
         print(f"Getting today's meal plan for {datetime.now().strftime('%A')}...")
         today_plan = get_todays_plan.get_meal_plan_for_today()

@@ -18,7 +18,7 @@ def parse_meal_plan(raw_text):
     for line in lines:
         line = line.strip()
 
-        if line.startswith("MEAL PLAN:"):
+        if "MEAL PLAN:" in line:
             in_meal_plan_section = True
             continue
 
@@ -99,6 +99,8 @@ def get_meal_plan_for_today():
     week_key = get_week_key()
 
     if week_key not in db:
+        print(week_key)
+        print(db["meal_plan_2025-02-23"])
         print("No meal plan found for this week. Run `weekly_plan.py` first.")
         return None
 
