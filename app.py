@@ -539,23 +539,10 @@ def api_generate():
         traceback.print_exc()
         return jsonify({"status": "error", "message": f"An error occurred generating the meal plan: {str(e)}"}), 500
 
-# For testing the converter directly
-def test_convert():
-    """Test function to check if data conversion works properly"""
-    week_key = get_week_key()
-    if week_key not in db:
-        return "No meal plan found"
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    return jsonify({"status": "success", "message": "Not implemented yet :)"})
 
-    # Get the raw data
-    data = db[week_key]
-
-    # Try conversion
-    try:
-        converted = convert_replit_objects(data)
-        json_str = json.dumps(converted)
-        return f"Conversion successful. Length: {len(json_str)}"
-    except Exception as e:
-        return f"Conversion failed: {str(e)}"
 
 # ---------- Run App ----------
 

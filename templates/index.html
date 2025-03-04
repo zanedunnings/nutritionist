@@ -474,6 +474,109 @@
                 width: 100%;
                 text-align: center;
             }
+
+            /* Add this CSS to your existing styles */
+            .nerv-chat-container {
+                max-height: 400px;
+                overflow-y: auto;
+                background-color: rgba(0, 0, 0, 0.7);
+                border: 1px solid var(--nerv-orange);
+                margin-bottom: 15px;
+            }
+
+            .nerv-chat-message {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 0;
+                position: relative;
+            }
+
+            .nerv-chat-user {
+                background-color: rgba(0, 119, 204, 0.2);
+                border-left: 3px solid var(--nerv-blue);
+                text-align: right;
+            }
+
+            .nerv-chat-assistant {
+                background-color: rgba(255, 102, 0, 0.2);
+                border-left: 3px solid var(--nerv-orange);
+            }
+
+            .nerv-chat-input-container {
+                display: flex;
+                border: 1px solid var(--nerv-orange);
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 5px;
+            }
+
+            .nerv-chat-input {
+                flex-grow: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+                border: none;
+                color: var(--nerv-light);
+                padding: 10px;
+                font-family: 'Share Tech Mono', monospace;
+            }
+
+            .nerv-chat-input:focus {
+                outline: none;
+                box-shadow: 0 0 5px var(--nerv-orange);
+            }
+
+            .nerv-chat-send {
+                background-color: var(--nerv-dark);
+                color: var(--nerv-orange);
+                border: 1px solid var(--nerv-orange);
+                padding: 0 15px;
+                margin-left: 10px;
+                font-family: 'Share Tech Mono', monospace;
+                text-transform: uppercase;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .nerv-chat-send:hover {
+                background-color: var(--nerv-orange);
+                color: var(--nerv-dark);
+            }
+
+            .nerv-chat-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 15px;
+                background-color: var(--nerv-dark);
+                border-bottom: 1px solid var(--nerv-orange);
+            }
+
+            .nerv-chat-title {
+                color: var(--nerv-orange);
+                margin: 0;
+                font-size: 1rem;
+                text-transform: uppercase;
+            }
+
+            .nerv-pulse {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background-color: var(--nerv-green);
+                display: inline-block;
+                margin-right: 10px;
+                animation: pulse 2s infinite;
+            }
+
+            @keyframes pulse {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(0, 204, 119, 0.7);
+                }
+                70% {
+                    box-shadow: 0 0 0 10px rgba(0, 204, 119, 0);
+                }
+                100% {
+                    box-shadow: 0 0 0 0 rgba(0, 204, 119, 0);
+                }
+            }
         }
     </style>
 </head>
@@ -511,6 +614,28 @@
                     <p>Welcome to the NERV Nutritional Management System.</p>
                     <p>Current meal plan status: <span id="plan-status" style="color: var(--nerv-orange);">CHECKING...</span></p>
                     <p>Select an option from the navigation to proceed.</p>
+                </div>
+                <div class="corner-decoration corner-tl"></div>
+                <div class="corner-decoration corner-tr"></div>
+                <div class="corner-decoration corner-bl"></div>
+                <div class="corner-decoration corner-br"></div>
+            </div>
+
+            <!-- Add this to each section where you want the chat (Weekly, Today, etc.) -->
+            <div class="nerv-card mt-4">
+                <div class="nerv-chat-header">
+                    <h5 class="nerv-chat-title"><span class="nerv-pulse"></span>MAGI System</h5>
+                    <small>Nutritional Query Interface</small>
+                </div>
+                <div class="nerv-chat-container" id="chat-messages">
+                    <!-- Messages will be added here dynamically -->
+                    <div class="nerv-chat-message nerv-chat-assistant">
+                        MAGI system online. How may I assist with your nutritional plan?
+                    </div>
+                </div>
+                <div class="nerv-chat-input-container">
+                    <input type="text" class="nerv-chat-input" id="chat-input" placeholder="Enter your query..." />
+                    <button class="nerv-chat-send" id="chat-send">Send</button>
                 </div>
                 <div class="corner-decoration corner-tl"></div>
                 <div class="corner-decoration corner-tr"></div>
@@ -672,6 +797,10 @@
             
             // Navigation handlers
             setupNavigation();
+
+            // Chat handlers
+            setupChat();
+
             
             // Generate button handler
             document.getElementById('generate-button').addEventListener('click', generateMealPlan);
@@ -1584,6 +1713,149 @@
             setTimeout(() => {
                 toast.classList.remove('active');
             }, duration);
+        }
+
+        /* JavaScript for chat functionality */
+        // Add these functions to your JavaScript file
+        function setupChat() {
+            const chatInput = document.getElementById('chat-input');
+            const chatSend = document.getElementById('chat-send');
+            const chatMessages = document.getElementById('chat-messages');
+
+            // Send message when button is clicked
+            chatSend.addEventListener('click', () => {
+                sendChatMessage();
+            });
+
+            // Send message when Enter key is pressed
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+
+            // Function to send chat message
+            function sendChatMessage() {
+                const message = chatInput.value.trim();
+                if (message === '') return;
+
+                // Add user message to chat
+                addChatMessage(message, 'user');
+
+                // Clear input field
+                chatInput.value = '';
+
+                // Show loading state
+                const loadingId = showChatLoading();
+
+                // Call API to get response
+                processQuery(message)
+                    .then(response => {
+                        // Remove loading message
+                        removeChatLoading(loadingId);
+
+                        // Add assistant response
+                        addChatMessage(response, 'assistant');
+
+                        // Scroll to bottom
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    })
+                    .catch(error => {
+                        // Remove loading message
+                        removeChatLoading(loadingId);
+
+                        // Add error message
+                        addChatMessage('Error processing request: ' + error.message, 'assistant');
+
+                        // Scroll to bottom
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+            }
+
+            // Function to add message to chat
+            function addChatMessage(message, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `nerv-chat-message nerv-chat-${sender}`;
+                messageElement.textContent = message;
+
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Function to show loading state in chat
+            function showChatLoading() {
+                const loadingId = 'loading-' + Date.now();
+                const loadingElement = document.createElement('div');
+                loadingElement.className = 'nerv-chat-message nerv-chat-assistant';
+                loadingElement.id = loadingId;
+                loadingElement.textContent = 'Processing request...';
+
+                chatMessages.appendChild(loadingElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                return loadingId;
+            }
+
+            // Function to remove loading message
+            function removeChatLoading(loadingId) {
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.remove();
+                }
+            }
+        }
+
+        // Function to process query via API
+        async function processQuery(message) {
+            // Determine context based on active section
+            let endpoint = '/api/chat';
+            let context = 'general';
+
+            if (document.getElementById('weekly').classList.contains('active')) {
+                context = 'weekly';
+            } else if (document.getElementById('today').classList.contains('active')) {
+                context = 'today';
+            }
+
+            // Call API
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: context
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // If the response indicates a plan update
+                    if (data.updated) {
+                        // Refresh the current view
+                        if (context === 'weekly') {
+                            weeklyPlan = null;
+                            loadWeeklyPlan();
+                        } else if (context === 'today') {
+                            todayPlan = null;
+                            loadTodayPlan();
+                        }
+
+                        // Return message with update notification
+                        return data.message + "\n\n[Plan has been updated]";
+                    }
+
+                    return data.message;
+                } else {
+                    throw new Error(data.message || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error processing chat query:', error);
+                throw error;
+            }
         }
     </script>
 </body>
