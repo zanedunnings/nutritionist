@@ -1,0 +1,509 @@
+{
+  "meal_plan": {
+    "overview": {
+      "calorie_goal": "1,900-2,200 calories per day",
+      "protein_goal": "200g protein per day",
+      "summary": "7-day gluten-free meal plan with meal prep Sundays and Wednesdays. Includes Asian and Mediterranean influences, with no-cook dinners on Mondays and Wednesdays using leftovers. Focus on efficient prep and protein-rich meals spread across 5 daily meals."
+    },
+    "daily_plans": {
+      "sunday": {
+        "is_prep_day": true,
+        "is_no_cook_dinner": false,
+        "breakfast": {
+          "description": "Greek Yogurt Protein Bowl: 1 cup plain Greek yogurt, 1/2 cup GF granola, 1 scoop protein powder, mixed berries",
+          "protein": 35,
+          "carbs": 40,
+          "fats": 8,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "1/2 cup granola",
+            "meat": "1 cup Greek yogurt",
+            "vegetables": "1/2 cup berries"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with 1 oz almonds",
+          "protein": 30,
+          "carbs": 15,
+          "fats": 15,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Mediterranean Chicken Salad: 6oz grilled chicken breast, 2 cups mixed greens, cherry tomatoes, cucumber, olives, feta, GF Greek dressing",
+          "protein": 45,
+          "carbs": 15,
+          "fats": 25,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "6oz chicken breast",
+            "vegetables": "2 cups greens"
+          }
+        },
+        "pm_snack": {
+          "description": "Turkey and Cheese Roll-Ups: 4oz deli turkey, 1oz cheese, cucumber slices",
+          "protein": 30,
+          "carbs": 5,
+          "fats": 15,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "4oz turkey",
+            "vegetables": "1 cup cucumber"
+          }
+        },
+        "dinner": {
+          "description": "Asian Sesame Salmon with Stir-Fried Vegetables: 8oz salmon, 1 cup brown rice, 2 cups mixed Asian vegetables",
+          "protein": 60,
+          "carbs": 45,
+          "fats": 35,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "1 cup brown rice",
+            "meat": "8oz salmon",
+            "vegetables": "2 cups mixed vegetables"
+          }
+        }
+      },
+      "monday": {
+        "is_prep_day": false,
+        "is_no_cook_dinner": true,
+        "breakfast": {
+          "description": "Protein Oatmeal: 1 cup GF oats, 1 scoop protein powder, 1 tbsp almond butter, banana",
+          "protein": 35,
+          "carbs": 45,
+          "fats": 12,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "1 cup oats",
+            "meat": "1 scoop protein",
+            "vegetables": "1 banana"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with rice cake and 1 tbsp almond butter",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 12,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1 rice cake",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Sunday Prep Chicken with 1 cup brown rice and roasted vegetables",
+          "protein": 45,
+          "carbs": 40,
+          "fats": 15,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "1 cup brown rice",
+            "meat": "6oz chicken",
+            "vegetables": "1.5 cups vegetables"
+          }
+        },
+        "pm_snack": {
+          "description": "Protein Smoothie: protein powder, almond milk, spinach, berries",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 8,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1 cup berries",
+            "meat": "1 scoop protein",
+            "vegetables": "1 cup spinach"
+          }
+        },
+        "dinner": {
+          "description": "Leftover Asian Sesame Salmon with fresh bagged salad",
+          "protein": 60,
+          "carbs": 30,
+          "fats": 35,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "1 cup rice",
+            "meat": "8oz salmon",
+            "vegetables": "2 cups salad"
+          }
+        }
+      },
+      "tuesday": {
+        "is_prep_day": false,
+        "is_no_cook_dinner": false,
+        "breakfast": {
+          "description": "Turkey and Egg Breakfast Bowl: 3 eggs, 3oz ground turkey, sweet potato hash",
+          "protein": 35,
+          "carbs": 30,
+          "fats": 20,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "4oz sweet potato",
+            "meat": "3 eggs, 3oz turkey",
+            "vegetables": "1 cup vegetables"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with GF rice crackers",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 8,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "10 crackers",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Sunday Prep Chicken Buddha Bowl with quinoa and roasted vegetables",
+          "protein": 45,
+          "carbs": 40,
+          "fats": 15,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "3/4 cup quinoa",
+            "meat": "6oz chicken",
+            "vegetables": "2 cups vegetables"
+          }
+        },
+        "pm_snack": {
+          "description": "Greek Yogurt with protein powder and berries",
+          "protein": 30,
+          "carbs": 15,
+          "fats": 8,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1/2 cup berries",
+            "meat": "1 cup yogurt",
+            "vegetables": "N/A"
+          }
+        },
+        "dinner": {
+          "description": "Ground Turkey Stuffed Peppers with Cauliflower Rice",
+          "protein": 60,
+          "carbs": 25,
+          "fats": 30,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "1 cup cauliflower rice",
+            "meat": "8oz ground turkey",
+            "vegetables": "2 large peppers"
+          }
+        }
+      },
+      "wednesday": {
+        "is_prep_day": true,
+        "is_no_cook_dinner": true,
+        "breakfast": {
+          "description": "Protein Pancakes: GF protein pancake mix, protein powder, sugar-free syrup",
+          "protein": 35,
+          "carbs": 35,
+          "fats": 12,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "1/2 cup pancake mix",
+            "meat": "1 scoop protein",
+            "vegetables": "N/A"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with apple and almond butter",
+          "protein": 30,
+          "carbs": 25,
+          "fats": 12,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1 medium apple",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Leftover Turkey Stuffed Peppers with side salad",
+          "protein": 45,
+          "carbs": 20,
+          "fats": 25,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "1 cup cauliflower rice",
+            "meat": "6oz turkey",
+            "vegetables": "2 cups salad"
+          }
+        },
+        "pm_snack": {
+          "description": "Tuna Salad with GF crackers",
+          "protein": 30,
+          "carbs": 15,
+          "fats": 12,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "6 crackers",
+            "meat": "4oz tuna",
+            "vegetables": "1 cup celery"
+          }
+        },
+        "dinner": {
+          "description": "Leftover Turkey Stuffed Peppers with fresh bagged salad",
+          "protein": 60,
+          "carbs": 25,
+          "fats": 30,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "1 cup cauliflower rice",
+            "meat": "8oz turkey",
+            "vegetables": "2 cups salad"
+          }
+        }
+      },
+      "thursday": {
+        "is_prep_day": false,
+        "is_no_cook_dinner": false,
+        "breakfast": {
+          "description": "Egg White Frittata with turkey sausage and vegetables",
+          "protein": 35,
+          "carbs": 20,
+          "fats": 15,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "6 egg whites, 2oz sausage",
+            "vegetables": "1 cup mixed vegetables"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with rice cake and nut butter",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 12,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1 rice cake",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Wednesday Prep Thai Chicken with jasmine rice and vegetables",
+          "protein": 45,
+          "carbs": 40,
+          "fats": 15,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "3/4 cup rice",
+            "meat": "6oz chicken",
+            "vegetables": "1.5 cups vegetables"
+          }
+        },
+        "pm_snack": {
+          "description": "Protein balls (made with protein powder, almond butter, GF oats)",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 12,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1/3 cup oats",
+            "meat": "1 scoop protein",
+            "vegetables": "N/A"
+          }
+        },
+        "dinner": {
+          "description": "Shrimp Stir-Fry with GF teriyaki sauce and brown rice",
+          "protein": 60,
+          "carbs": 40,
+          "fats": 20,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "1 cup brown rice",
+            "meat": "8oz shrimp",
+            "vegetables": "2 cups stir-fry vegetables"
+          }
+        }
+      },
+      "friday": {
+        "is_prep_day": false,
+        "is_no_cook_dinner": false,
+        "breakfast": {
+          "description": "Protein Smoothie Bowl: protein powder, frozen berries, GF granola, coconut",
+          "protein": 35,
+          "carbs": 40,
+          "fats": 12,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "1/3 cup granola",
+            "meat": "1.5 scoops protein",
+            "vegetables": "1 cup berries"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with GF pretzels",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 8,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1oz pretzels",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Wednesday Prep Thai Chicken with quinoa and roasted vegetables",
+          "protein": 45,
+          "carbs": 40,
+          "fats": 15,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "3/4 cup quinoa",
+            "meat": "6oz chicken",
+            "vegetables": "1.5 cups vegetables"
+          }
+        },
+        "pm_snack": {
+          "description": "Turkey and cheese roll-ups with cucumber",
+          "protein": 30,
+          "carbs": 5,
+          "fats": 15,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "4oz turkey",
+            "vegetables": "1 cup cucumber"
+          }
+        },
+        "dinner": {
+          "description": "Grilled Steak with sweet potato and asparagus",
+          "protein": 60,
+          "carbs": 35,
+          "fats": 30,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "6oz sweet potato",
+            "meat": "8oz steak",
+            "vegetables": "2 cups asparagus"
+          }
+        }
+      },
+      "saturday": {
+        "is_prep_day": false,
+        "is_no_cook_dinner": false,
+        "breakfast": {
+          "description": "GF Toast with scrambled eggs, turkey bacon, and avocado",
+          "protein": 35,
+          "carbs": 30,
+          "fats": 20,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "2 slices GF bread",
+            "meat": "3 eggs, 2 slices bacon",
+            "vegetables": "1/4 avocado"
+          }
+        },
+        "am_snack": {
+          "description": "Fairlife Protein Shake with almonds",
+          "protein": 30,
+          "carbs": 15,
+          "fats": 15,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "1 shake",
+            "vegetables": "N/A"
+          }
+        },
+        "lunch": {
+          "description": "Leftover Steak Salad with mixed greens and balsamic dressing",
+          "protein": 45,
+          "carbs": 20,
+          "fats": 25,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "N/A",
+            "meat": "6oz steak",
+            "vegetables": "3 cups mixed greens"
+          }
+        },
+        "pm_snack": {
+          "description": "Greek Yogurt with protein powder and berries",
+          "protein": 30,
+          "carbs": 15,
+          "fats": 8,
+          "calories": 250,
+          "portion_sizes": {
+            "carbs": "1/2 cup berries",
+            "meat": "1 cup yogurt",
+            "vegetables": "N/A"
+          }
+        },
+        "dinner": {
+          "description": "GF Pasta with Turkey Meatballs and marinara sauce",
+          "protein": 60,
+          "carbs": 45,
+          "fats": 25,
+          "calories": 650,
+          "portion_sizes": {
+            "carbs": "2oz dry GF pasta",
+            "meat": "8oz turkey",
+            "vegetables": "2 cups zucchini"
+          }
+        }
+      }
+    },
+    "meal_prep": {
+      "sunday": "1. Cook 3lbs chicken breast for Mon/Tue lunches\n2. Prepare brown rice and quinoa\n3. Roast mixed vegetables (broccoli, carrots, peppers)\n4. Make Asian sesame salmon for Sunday dinner and Monday leftovers\n5. Prep protein balls for snacks",
+      "wednesday": "1. Prepare Thai-style chicken (3lbs) for Thu/Fri meals\n2. Cook jasmine rice and quinoa\n3. Roast mixed vegetables\n4. Prepare turkey stuffed peppers\n5. Cut vegetables for snacks"
+    },
+    "grocery_lists": {
+      "sunday": [
+        "3lbs chicken breast",
+        "2lbs salmon",
+        "1lb ground turkey",
+        "Eggs and egg whites",
+        "Greek yogurt",
+        "Fairlife protein shakes",
+        "GF oats",
+        "Brown rice",
+        "Quinoa",
+        "Mixed vegetables for roasting",
+        "Salad greens",
+        "Bell peppers",
+        "Asian vegetables",
+        "Protein powder",
+        "Almond butter",
+        "GF bread",
+        "Rice cakes",
+        "Berries",
+        "Bananas",
+        "Sweet potatoes",
+        "Seasonings (Asian sesame, Italian)",
+        "Olive oil",
+        "Coconut aminos (GF soy sauce alternative)"
+      ],
+      "wednesday": [
+        "3lbs chicken breast",
+        "1lb shrimp",
+        "8oz steak",
+        "1lb ground turkey",
+        "Fairlife protein shakes",
+        "Jasmine rice",
+        "GF teriyaki sauce",
+        "Bell peppers",
+        "Stir-fry vegetable mix",
+        "Asparagus",
+        "Sweet potatoes",
+        "Salad greens",
+        "Mixed vegetables for roasting",
+        "Thai curry paste",
+        "Coconut milk",
+        "Fresh herbs (basil, cilantro)",
+        "Lemons/limes"
+      ]
+    }
+  }
+}

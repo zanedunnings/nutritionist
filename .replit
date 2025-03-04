@@ -11,5 +11,20 @@ language = "python3"
 requiredFiles = [".replit", "replit.nix"]
 
 [deployment]
-run = ["sh", "-c", "python3 run_meal_plan.py"]
-deploymentTarget = "scheduled"
+run = ["sh", "-c", "python3 app.py"]
+deploymentTarget = "gce"
+
+[workflows]
+runButton = "Run Flask App"
+
+[[workflows.workflow]]
+name = "Run Flask App"
+author = 32818380
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python app.py"
+
+[[ports]]
+localPort = 8080
+externalPort = 80
