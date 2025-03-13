@@ -1,0 +1,19 @@
+# 🚀 Python-related ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# 🚀 Virtual Environment (don't push venv)
+venv/
+env/
+
+# 🚀 Log files & temporary files
+*.log
+*.out
+*.err
+logs/
+*.swp
+

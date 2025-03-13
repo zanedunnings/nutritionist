@@ -1,0 +1,491 @@
+{
+  "meal_plan": {
+    "overview": {
+      "calorie_goal": "2000-2200 calories per day",
+      "protein_goal": "120-140g protein per day",
+      "summary": "A balanced 7-day meal plan with a focus on whole foods, lean proteins, and complex carbohydrates. Includes meal prep instructions and grocery lists for efficient weekly planning."
+    },
+    "daily_plans": {
+      "monday": {
+        "breakfast": {
+          "description": "Oatmeal with berries and protein powder",
+          "protein": 25,
+          "carbs": 45,
+          "fats": 8,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "1 cup oats",
+            "vegetables": "1 cup mixed berries",
+            "meat": "1 scoop protein powder"
+          }
+        },
+        "am_snack": {
+          "description": "Greek yogurt with almonds",
+          "protein": 15,
+          "carbs": 12,
+          "fats": 8,
+          "calories": 180,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "",
+            "meat": "6 oz Greek yogurt"
+          }
+        },
+        "lunch": {
+          "description": "Grilled chicken salad with quinoa",
+          "protein": 35,
+          "carbs": 35,
+          "fats": 12,
+          "calories": 400,
+          "portion_sizes": {
+            "carbs": "1/2 cup quinoa",
+            "vegetables": "2 cups mixed greens",
+            "meat": "5 oz chicken breast"
+          }
+        },
+        "pm_snack": {
+          "description": "Apple with peanut butter",
+          "protein": 8,
+          "carbs": 25,
+          "fats": 16,
+          "calories": 280,
+          "portion_sizes": {
+            "carbs": "1 medium apple",
+            "vegetables": "",
+            "meat": "2 tbsp peanut butter"
+          }
+        },
+        "dinner": {
+          "description": "Baked salmon with roasted vegetables and brown rice",
+          "protein": 35,
+          "carbs": 45,
+          "fats": 15,
+          "calories": 450,
+          "portion_sizes": {
+            "carbs": "3/4 cup brown rice",
+            "vegetables": "2 cups mixed vegetables",
+            "meat": "6 oz salmon"
+          }
+        },
+        "is_prep_day": false,
+        "is_no_cook_dinner": false
+      },
+      "tuesday": {
+        "breakfast": {
+          "description": "Scrambled eggs with whole grain toast and avocado",
+          "protein": 20,
+          "carbs": 30,
+          "fats": 15,
+          "calories": 340,
+          "portion_sizes": {
+            "carbs": "2 slices bread",
+            "vegetables": "1/4 avocado",
+            "meat": "3 eggs"
+          }
+        },
+        "am_snack": {
+          "description": "Protein smoothie",
+          "protein": 20,
+          "carbs": 25,
+          "fats": 5,
+          "calories": 220,
+          "portion_sizes": {
+            "carbs": "1 banana",
+            "vegetables": "1 cup spinach",
+            "meat": "1 scoop protein powder"
+          }
+        },
+        "lunch": {
+          "description": "Turkey and hummus wrap",
+          "protein": 25,
+          "carbs": 35,
+          "fats": 12,
+          "calories": 380,
+          "portion_sizes": {
+            "carbs": "1 whole wheat wrap",
+            "vegetables": "1 cup mixed vegetables",
+            "meat": "4 oz turkey"
+          }
+        },
+        "pm_snack": {
+          "description": "Cottage cheese with fruit",
+          "protein": 15,
+          "carbs": 15,
+          "fats": 5,
+          "calories": 160,
+          "portion_sizes": {
+            "carbs": "1/2 cup fruit",
+            "vegetables": "",
+            "meat": "1/2 cup cottage cheese"
+          }
+        },
+        "dinner": {
+          "description": "Lean beef stir-fry with vegetables",
+          "protein": 35,
+          "carbs": 40,
+          "fats": 15,
+          "calories": 440,
+          "portion_sizes": {
+            "carbs": "3/4 cup brown rice",
+            "vegetables": "2 cups stir-fry vegetables",
+            "meat": "5 oz lean beef"
+          }
+        },
+        "is_prep_day": false,
+        "is_no_cook_dinner": false
+      },
+      "wednesday": {
+        "breakfast": {
+          "description": "Protein pancakes with fresh berries",
+          "protein": 25,
+          "carbs": 35,
+          "fats": 10,
+          "calories": 330,
+          "portion_sizes": {
+            "carbs": "1 serving mix",
+            "vegetables": "1 cup berries",
+            "meat": ""
+          }
+        },
+        "am_snack": {
+          "description": "Hard-boiled eggs and cherry tomatoes",
+          "protein": 12,
+          "carbs": 6,
+          "fats": 10,
+          "calories": 160,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "1 cup cherry tomatoes",
+            "meat": "2 eggs"
+          }
+        },
+        "lunch": {
+          "description": "Tuna salad with mixed greens",
+          "protein": 30,
+          "carbs": 20,
+          "fats": 15,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "2 cups mixed greens",
+            "meat": "5 oz tuna"
+          }
+        },
+        "pm_snack": {
+          "description": "Protein bar",
+          "protein": 20,
+          "carbs": 25,
+          "fats": 8,
+          "calories": 240,
+          "portion_sizes": {
+            "carbs": "1 bar",
+            "vegetables": "",
+            "meat": ""
+          }
+        },
+        "dinner": {
+          "description": "Grilled chicken breast with sweet potato and green beans",
+          "protein": 35,
+          "carbs": 40,
+          "fats": 10,
+          "calories": 420,
+          "portion_sizes": {
+            "carbs": "1 medium sweet potato",
+            "vegetables": "1.5 cups green beans",
+            "meat": "6 oz chicken breast"
+          }
+        },
+        "is_prep_day": true,
+        "is_no_cook_dinner": false
+      },
+      "thursday": {
+        "breakfast": {
+          "description": "Greek yogurt parfait with granola",
+          "protein": 20,
+          "carbs": 40,
+          "fats": 8,
+          "calories": 320,
+          "portion_sizes": {
+            "carbs": "1/3 cup granola",
+            "vegetables": "1/2 cup berries",
+            "meat": "1 cup Greek yogurt"
+          }
+        },
+        "am_snack": {
+          "description": "Mixed nuts and dried fruit",
+          "protein": 8,
+          "carbs": 20,
+          "fats": 15,
+          "calories": 240,
+          "portion_sizes": {
+            "carbs": "2 tbsp dried fruit",
+            "vegetables": "",
+            "meat": "1/4 cup mixed nuts"
+          }
+        },
+        "lunch": {
+          "description": "Chicken quinoa bowl",
+          "protein": 30,
+          "carbs": 45,
+          "fats": 12,
+          "calories": 420,
+          "portion_sizes": {
+            "carbs": "3/4 cup quinoa",
+            "vegetables": "1.5 cups mixed vegetables",
+            "meat": "5 oz chicken"
+          }
+        },
+        "pm_snack": {
+          "description": "Rice cakes with almond butter",
+          "protein": 8,
+          "carbs": 22,
+          "fats": 12,
+          "calories": 220,
+          "portion_sizes": {
+            "carbs": "2 rice cakes",
+            "vegetables": "",
+            "meat": "2 tbsp almond butter"
+          }
+        },
+        "dinner": {
+          "description": "Turkey meatballs with zucchini noodles",
+          "protein": 35,
+          "carbs": 25,
+          "fats": 15,
+          "calories": 380,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "2 cups zucchini noodles",
+            "meat": "6 oz turkey meatballs"
+          }
+        },
+        "is_prep_day": false,
+        "is_no_cook_dinner": false
+      },
+      "friday": {
+        "breakfast": {
+          "description": "Breakfast burrito with eggs and black beans",
+          "protein": 25,
+          "carbs": 35,
+          "fats": 15,
+          "calories": 380,
+          "portion_sizes": {
+            "carbs": "1 tortilla",
+            "vegetables": "1/2 cup vegetables",
+            "meat": "2 eggs"
+          }
+        },
+        "am_snack": {
+          "description": "Protein shake",
+          "protein": 25,
+          "carbs": 20,
+          "fats": 5,
+          "calories": 220,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "",
+            "meat": "1 scoop protein powder"
+          }
+        },
+        "lunch": {
+          "description": "Mediterranean salad with grilled chicken",
+          "protein": 35,
+          "carbs": 30,
+          "fats": 15,
+          "calories": 400,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "2 cups mixed greens",
+            "meat": "5 oz chicken"
+          }
+        },
+        "pm_snack": {
+          "description": "Hummus with carrots",
+          "protein": 8,
+          "carbs": 25,
+          "fats": 10,
+          "calories": 220,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "1 cup carrots",
+            "meat": "1/3 cup hummus"
+          }
+        },
+        "dinner": {
+          "description": "Grilled fish tacos with slaw",
+          "protein": 30,
+          "carbs": 35,
+          "fats": 15,
+          "calories": 400,
+          "portion_sizes": {
+            "carbs": "2 corn tortillas",
+            "vegetables": "1 cup slaw",
+            "meat": "6 oz white fish"
+          }
+        },
+        "is_prep_day": false,
+        "is_no_cook_dinner": false
+      },
+      "saturday": {
+        "breakfast": {
+          "description": "Protein smoothie bowl",
+          "protein": 25,
+          "carbs": 45,
+          "fats": 12,
+          "calories": 380,
+          "portion_sizes": {
+            "carbs": "1/4 cup granola",
+            "vegetables": "1 cup mixed fruit",
+            "meat": "1 scoop protein powder"
+          }
+        },
+        "am_snack": {
+          "description": "Turkey and cheese roll-ups",
+          "protein": 15,
+          "carbs": 5,
+          "fats": 8,
+          "calories": 160,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "",
+            "meat": "3 oz turkey"
+          }
+        },
+        "lunch": {
+          "description": "Quinoa bowl with roasted vegetables",
+          "protein": 20,
+          "carbs": 45,
+          "fats": 15,
+          "calories": 400,
+          "portion_sizes": {
+            "carbs": "3/4 cup quinoa",
+            "vegetables": "2 cups roasted vegetables",
+            "meat": ""
+          }
+        },
+        "pm_snack": {
+          "description": "Protein bar",
+          "protein": 20,
+          "carbs": 25,
+          "fats": 8,
+          "calories": 240,
+          "portion_sizes": {
+            "carbs": "1 bar",
+            "vegetables": "",
+            "meat": ""
+          }
+        },
+        "dinner": {
+          "description": "Grilled steak with roasted potatoes",
+          "protein": 35,
+          "carbs": 35,
+          "fats": 20,
+          "calories": 460,
+          "portion_sizes": {
+            "carbs": "1 cup potatoes",
+            "vegetables": "1.5 cups vegetables",
+            "meat": "5 oz steak"
+          }
+        },
+        "is_prep_day": false,
+        "is_no_cook_dinner": false
+      },
+      "sunday": {
+        "breakfast": {
+          "description": "Veggie omelet with toast",
+          "protein": 25,
+          "carbs": 30,
+          "fats": 15,
+          "calories": 350,
+          "portion_sizes": {
+            "carbs": "2 slices bread",
+            "vegetables": "1 cup mixed vegetables",
+            "meat": "3 eggs"
+          }
+        },
+        "am_snack": {
+          "description": "Protein smoothie",
+          "protein": 20,
+          "carbs": 25,
+          "fats": 5,
+          "calories": 220,
+          "portion_sizes": {
+            "carbs": "1 banana",
+            "vegetables": "1 cup spinach",
+            "meat": "1 scoop protein powder"
+          }
+        },
+        "lunch": {
+          "description": "Chicken and avocado wrap",
+          "protein": 30,
+          "carbs": 35,
+          "fats": 15,
+          "calories": 400,
+          "portion_sizes": {
+            "carbs": "1 whole wheat wrap",
+            "vegetables": "1 cup mixed vegetables",
+            "meat": "5 oz chicken"
+          }
+        },
+        "pm_snack": {
+          "description": "Greek yogurt with berries",
+          "protein": 15,
+          "carbs": 20,
+          "fats": 5,
+          "calories": 180,
+          "portion_sizes": {
+            "carbs": "",
+            "vegetables": "1/2 cup berries",
+            "meat": "3/4 cup Greek yogurt"
+          }
+        },
+        "dinner": {
+          "description": "Baked chicken with quinoa and roasted vegetables",
+          "protein": 35,
+          "carbs": 40,
+          "fats": 12,
+          "calories": 420,
+          "portion_sizes": {
+            "carbs": "3/4 cup quinoa",
+            "vegetables": "2 cups roasted vegetables",
+            "meat": "6 oz chicken breast"
+          }
+        },
+        "is_prep_day": true,
+        "is_no_cook_dinner": false
+      }
+    },
+    "meal_prep": {
+      "sunday": "1. Cook chicken breasts for weekly lunches\n2. Prepare quinoa batch\n3. Roast vegetables\n4. Make overnight oats portions\n5. Portion out snacks",
+      "wednesday": "1. Cook additional protein portions\n2. Prep fresh vegetable containers\n3. Make additional quinoa if needed\n4. Prepare smoothie packs"
+    },
+    "grocery_lists": {
+      "sunday": [
+        "Chicken breasts",
+        "Quinoa",
+        "Mixed vegetables for roasting",
+        "Greek yogurt",
+        "Berries",
+        "Protein powder",
+        "Eggs",
+        "Whole grain bread",
+        "Oats",
+        "Almond butter",
+        "Bananas",
+        "Spinach",
+        "Whole wheat wraps",
+        "Avocados"
+      ],
+      "wednesday": [
+        "Additional chicken or protein options",
+        "Fresh vegetables",
+        "Greek yogurt",
+        "Eggs",
+        "Berries",
+        "Quinoa (if needed)",
+        "Protein bars",
+        "Nuts for snacks"
+      ]
+    }
+  }
+}

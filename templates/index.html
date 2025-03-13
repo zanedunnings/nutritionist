@@ -1,0 +1,1584 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NERV Nutritional Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
+    <style>
+        :root {
+            --nerv-orange: #FF6600;
+            --nerv-red: #FF0000;
+            --nerv-blue: #0077CC;
+            --nerv-dark: #1A1A1A;
+            --nerv-light: #CCCCCC;
+            --nerv-green: #00CC77;
+            --nerv-yellow: #FFCC00;
+        }
+        
+        body {
+            background-color: #000000;
+            color: var(--nerv-light);
+            font-family: 'Share Tech Mono', monospace;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .nerv-container {
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Evangelion-style header */
+        .nerv-header {
+            background-color: var(--nerv-dark);
+            border-bottom: 3px solid var(--nerv-orange);
+            padding: 15px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .nerv-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255, 102, 0, 0.1),
+                rgba(255, 102, 0, 0.1) 10px,
+                rgba(255, 102, 0, 0.05) 10px,
+                rgba(255, 102, 0, 0.05) 20px
+            );
+            z-index: -1;
+        }
+        
+        .nerv-title {
+            color: var(--nerv-orange);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0;
+            font-size: 1.8rem;
+            text-shadow: 0 0 5px rgba(255, 102, 0, 0.7);
+        }
+        
+        .nerv-logo {
+            font-size: 0.8rem;
+            color: white;
+            text-align: right;
+            margin-bottom: 0;
+        }
+        
+        /* Navigation buttons */
+        .nerv-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nerv-button {
+            background-color: var(--nerv-dark);
+            color: var(--nerv-light);
+            border: 1px solid var(--nerv-orange);
+            padding: 8px 15px;
+            transition: all 0.3s;
+            position: relative;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .nerv-button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 102, 0, 0.1),
+                transparent,
+                rgba(255, 102, 0, 0.1)
+            );
+            z-index: -1;
+        }
+        
+        .nerv-button:hover, .nerv-button.active {
+            background-color: var(--nerv-orange);
+            color: black;
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.7);
+        }
+        
+        /* Cards */
+        .nerv-card {
+            background-color: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--nerv-orange);
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.2);
+        }
+        
+        .nerv-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                transparent 0%,
+                transparent 95%,
+                var(--nerv-orange) 95%,
+                var(--nerv-orange) 100%
+            );
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .nerv-card-header {
+            background-color: var(--nerv-dark);
+            color: var(--nerv-orange);
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--nerv-orange);
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+        }
+        
+        .nerv-card-header::before {
+            content: "[";
+            margin-right: 5px;
+            color: var(--nerv-orange);
+        }
+        
+        .nerv-card-header::after {
+            content: "]";
+            margin-left: 5px;
+            color: var(--nerv-orange);
+        }
+        
+        .nerv-card-body {
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Grid decoration */
+        .grid-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 119, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 119, 204, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Meal cards */
+        .nerv-meal-card {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--nerv-light);
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .nerv-meal-header {
+            padding: 8px 12px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--nerv-light);
+            border-bottom: 1px solid var(--nerv-orange);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nerv-meal-title {
+            margin: 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--nerv-orange);
+        }
+        
+        .nerv-meal-body {
+            padding: 12px;
+        }
+        
+        /* Portion sizes display */
+        .portion-sizes {
+            margin-top: 10px;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-left: 2px solid var(--nerv-orange);
+        }
+        
+        .portion-size-item {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+        }
+        
+        .portion-size-item::before {
+            content: "•";
+            color: var(--nerv-orange);
+            margin-right: 8px;
+        }
+        
+        .portion-label {
+            width: 80px;
+            font-size: 0.8rem;
+            color: var(--nerv-light);
+            text-transform: uppercase;
+        }
+        
+        .portion-value {
+            font-size: 0.8rem;
+            color: var(--nerv-orange);
+        }
+        
+        /* Macros display */
+        .nerv-macros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .nerv-macro {
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border: 1px solid;
+            display: inline-block;
+        }
+        
+        .nerv-macro-protein {
+            border-color: var(--nerv-blue);
+            color: var(--nerv-blue);
+        }
+        
+        .nerv-macro-carbs {
+            border-color: var(--nerv-green);
+            color: var(--nerv-green);
+        }
+        
+        .nerv-macro-fats {
+            border-color: var(--nerv-yellow);
+            color: var(--nerv-yellow);
+        }
+        
+        .nerv-macro-calories {
+            border-color: var(--nerv-red);
+            color: var(--nerv-red);
+        }
+        
+        /* Macro progress bars */
+        .nerv-macro-bar {
+            height: 10px;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            margin-bottom: 3px;
+            display: flex;
+            border: 1px solid var(--nerv-light);
+        }
+        
+        .nerv-macro-fill-protein {
+            background-color: var(--nerv-blue);
+            height: 100%;
+        }
+        
+        .nerv-macro-fill-carbs {
+            background-color: var(--nerv-green);
+            height: 100%;
+        }
+        
+        .nerv-macro-fill-fats {
+            background-color: var(--nerv-yellow);
+            height: 100%;
+        }
+        
+        /* Sections */
+        .nerv-section {
+            display: none;
+        }
+        
+        .nerv-section.active {
+            display: block;
+        }
+        
+        /* Tabs */
+        .nerv-tab {
+            display: none;
+        }
+        
+        .nerv-tab.active {
+            display: block;
+        }
+        
+        /* Grocery list */
+        .nerv-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .nerv-list-item {
+            padding: 8px 10px;
+            border-left: 3px solid var(--nerv-orange);
+            margin-bottom: 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .nerv-list-item::before {
+            content: ">";
+            color: var(--nerv-orange);
+            margin-right: 8px;
+        }
+        
+        /* Loading spinner */
+        .nerv-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .nerv-loading.active {
+            display: block;
+        }
+        
+        .nerv-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 102, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--nerv-orange);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Decoration */
+        .corner-decoration {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 1px solid var(--nerv-orange);
+        }
+        
+        .corner-tl {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .corner-tr {
+            top: -1px;
+            right: -1px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .corner-bl {
+            bottom: -1px;
+            left: -1px;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .corner-br {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        /* Status indicators */
+        .nerv-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            text-transform: uppercase;
+        }
+        
+        .nerv-status-prep {
+            background-color: var(--nerv-green);
+            color: black;
+        }
+        
+        .nerv-status-no-cook {
+            background-color: var(--nerv-blue);
+            color: white;
+        }
+        
+        /* Toast notifications */
+        .nerv-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--nerv-orange);
+            padding: 10px 15px;
+            color: var(--nerv-light);
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
+            display: none;
+        }
+        
+        .nerv-toast.active {
+            display: block;
+            animation: fadeIn 0.3s, fadeOut 0.3s 3s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .nerv-title {
+                font-size: 1.2rem;
+            }
+            
+            .nerv-nav {
+                flex-direction: column;
+            }
+            
+            .nerv-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-decoration"></div>
+    <div id="nerv-toast" class="nerv-toast"></div>
+    
+    <div class="nerv-container">
+        <header class="nerv-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="nerv-title">NERV Nutritional Management System</h1>
+                </div>
+                <div class="col-md-4">
+                    <p class="nerv-logo">
+                        <span style="color: var(--nerv-orange);">NERV</span> | TOKYO-3<br>
+                        <span id="datetime">2015.09.13 | 15:22:04</span>
+                    </p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="nerv-nav">
+            <button class="nerv-button active" data-section="home">Home</button>
+            <button class="nerv-button" data-section="generate">Generate Plan</button>
+            <button class="nerv-button" data-section="weekly">Weekly View</button>
+            <button class="nerv-button" data-section="today">Today's Meals</button>
+        </div>
+        
+        <!-- Home Section -->
+        <section id="home" class="nerv-section active">
+            <div class="nerv-card">
+                <div class="nerv-card-header">System Status</div>
+                <div class="nerv-card-body">
+                    <p>Welcome to the NERV Nutritional Management System.</p>
+                    <p>Current meal plan status: <span id="plan-status" style="color: var(--nerv-orange);">CHECKING...</span></p>
+                    <p>Select an option from the navigation to proceed.</p>
+                </div>
+                <div class="corner-decoration corner-tl"></div>
+                <div class="corner-decoration corner-tr"></div>
+                <div class="corner-decoration corner-bl"></div>
+                <div class="corner-decoration corner-br"></div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="nerv-card">
+                        <div class="nerv-card-header">Generate Plan</div>
+                        <div class="nerv-card-body">
+                            <p>Create a new 7-day nutritional plan optimized for your needs.</p>
+                            <button class="nerv-button" data-section="generate">Initiate</button>
+                        </div>
+                        <div class="corner-decoration corner-tl"></div>
+                        <div class="corner-decoration corner-tr"></div>
+                        <div class="corner-decoration corner-bl"></div>
+                        <div class="corner-decoration corner-br"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="nerv-card">
+                        <div class="nerv-card-header">Weekly View</div>
+                        <div class="nerv-card-body">
+                            <p>Analyze comprehensive 7-day nutritional data.</p>
+                            <button class="nerv-button" data-section="weekly">Access</button>
+                        </div>
+                        <div class="corner-decoration corner-tl"></div>
+                        <div class="corner-decoration corner-tr"></div>
+                        <div class="corner-decoration corner-bl"></div>
+                        <div class="corner-decoration corner-br"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="nerv-card">
+                        <div class="nerv-card-header">Today's Meals</div>
+                        <div class="nerv-card-body">
+                            <p>View current day nutritional requirements and meal composition.</p>
+                            <button class="nerv-button" data-section="today">View</button>
+                        </div>
+                        <div class="corner-decoration corner-tl"></div>
+                        <div class="corner-decoration corner-tr"></div>
+                        <div class="corner-decoration corner-bl"></div>
+                        <div class="corner-decoration corner-br"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Generate Section -->
+        <section id="generate" class="nerv-section">
+            <div class="nerv-card">
+                <div class="nerv-card-header">Plan Generation Parameters</div>
+                <div class="nerv-card-body">
+                    <p>System will generate nutritional program with following parameters:</p>
+                    <ul>
+                        <li>Daily Calories: ~1,900–2,200</li>
+                        <li>Daily Protein: ~200g</li>
+                        <li>5 meals per day: Breakfast, AM Snack, Lunch, PM Snack, Dinner</li>
+                        <li>Gluten-free protocol active</li>
+                        <li>Meal preparation scheduled: Sunday and Wednesday</li>
+                        <li>No-cook dinner protocol: Monday and Wednesday</li>
+                    </ul>
+                    <p class="text-warning">WARNING: This will override any existing nutritional program.</p>
+                    <div class="nerv-loading" id="loading-generate">
+                        <div class="nerv-spinner"></div>
+                        <p class="mt-3">Generating nutritional program. Please stand by...</p>
+                        <p>Estimated time: 60 seconds</p>
+                    </div>
+                    <div class="text-center">
+                        <button id="generate-button" class="nerv-button">Initialize Generation</button>
+                    </div>
+                </div>
+                <div class="corner-decoration corner-tl"></div>
+                <div class="corner-decoration corner-tr"></div>
+                <div class="corner-decoration corner-bl"></div>
+                <div class="corner-decoration corner-br"></div>
+            </div>
+        </section>
+        
+        <!-- Weekly Section -->
+        <section id="weekly" class="nerv-section">
+            <div class="nerv-card">
+                <div class="nerv-card-header">Nutritional Program Overview</div>
+                <div class="nerv-card-body" id="weekly-overview">
+                    <div class="nerv-loading" id="loading-weekly-overview">
+                        <div class="nerv-spinner"></div>
+                        <p class="mt-3">Loading nutritional data...</p>
+                    </div>
+                </div>
+                <div class="corner-decoration corner-tl"></div>
+                <div class="corner-decoration corner-tr"></div>
+                <div class="corner-decoration corner-bl"></div>
+                <div class="corner-decoration corner-br"></div>
+            </div>
+            
+            <div class="nerv-nav">
+                <button class="nerv-button active" data-tab="meals">Daily Meals</button>
+                <button class="nerv-button" data-tab="prep">Meal Prep</button>
+                <button class="nerv-button" data-tab="grocery">Grocery Lists</button>
+            </div>
+            
+            <!-- Weekly Tabs -->
+            <div id="tab-meals" class="nerv-tab active">
+                <div id="daily-meals-container">
+                    <div class="nerv-loading" id="loading-daily-meals">
+                        <div class="nerv-spinner"></div>
+                        <p class="mt-3">Loading meal data...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-prep" class="nerv-tab">
+                <div id="meal-prep-container">
+                    <div class="nerv-loading" id="loading-meal-prep">
+                        <div class="nerv-spinner"></div>
+                        <p class="mt-3">Loading prep instructions...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-grocery" class="nerv-tab">
+                <div id="grocery-lists-container">
+                    <div class="nerv-loading" id="loading-grocery">
+                        <div class="nerv-spinner"></div>
+                        <p class="mt-3">Loading grocery lists...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Today Section -->
+        <section id="today" class="nerv-section">
+            <div id="today-container">
+                <div class="nerv-loading" id="loading-today">
+                    <div class="nerv-spinner"></div>
+                    <p class="mt-3">Loading today's nutritional protocol...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Global state
+        let weeklyPlan = null;
+        let todayPlan = null;
+        let hasPlan = false;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check plan status
+            checkPlanStatus();
+            
+            // Update date/time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Navigation handlers
+            setupNavigation();
+            
+            // Generate button handler
+            document.getElementById('generate-button').addEventListener('click', generateMealPlan);
+        });
+        
+        // Check if meal plan exists
+        function checkPlanStatus() {
+            fetch('/api/weekly')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('plan-status').textContent = 'ACTIVE';
+                        document.getElementById('plan-status').style.color = 'var(--nerv-green)';
+                        hasPlan = true;
+                    } else {
+                        document.getElementById('plan-status').textContent = 'NO PLAN FOUND';
+                        document.getElementById('plan-status').style.color = 'var(--nerv-red)';
+                        hasPlan = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking plan status:', error);
+                    document.getElementById('plan-status').textContent = 'ERROR';
+                    document.getElementById('plan-status').style.color = 'var(--nerv-red)';
+                    hasPlan = false;
+                    showToast('Error connecting to server: ' + error.message);
+                });
+        }
+        
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const formattedDate = now.getFullYear() + '.' + 
+                                 String(now.getMonth() + 1).padStart(2, '0') + '.' + 
+                                 String(now.getDate()).padStart(2, '0');
+            
+            const formattedTime = String(now.getHours()).padStart(2, '0') + ':' +
+                                 String(now.getMinutes()).padStart(2, '0') + ':' +
+                                 String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('datetime').textContent = formattedDate + ' | ' + formattedTime;
+        }
+        
+        // Navigation setup
+        function setupNavigation() {
+            // Section navigation
+            document.querySelectorAll('.nerv-button[data-section]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    
+                    // Hide all sections and deactivate buttons
+                    document.querySelectorAll('.nerv-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.querySelectorAll('.nerv-button[data-section]').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Show selected section and activate button
+                    document.getElementById(sectionId).classList.add('active');
+                    this.classList.add('active');
+                    
+                    // Load data if needed
+                    if (sectionId === 'weekly' && hasPlan) {
+                        loadWeeklyPlan();
+                    } else if (sectionId === 'today' && hasPlan) {
+                        loadTodayPlan();
+                    }
+                });
+            });
+            
+            // Tab navigation
+            document.querySelectorAll('.nerv-button[data-tab]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Hide all tabs and deactivate buttons
+                    document.querySelectorAll('.nerv-tab').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    document.querySelectorAll('.nerv-button[data-tab]').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Show selected tab and activate button
+                    document.getElementById('tab-' + tabId).classList.add('active');
+                    this.classList.add('active');
+                });
+            });
+        }
+        
+        // Generate meal plan
+        function generateMealPlan() {
+            // Show loading indicator
+            document.getElementById('generate-button').style.display = 'none';
+            document.getElementById('loading-generate').classList.add('active');
+            
+            // Call API
+            fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading indicator
+                document.getElementById('loading-generate').classList.remove('active');
+                document.getElementById('generate-button').style.display = 'inline-block';
+                
+                if (data.status === 'success') {
+                    showToast('Meal plan generated successfully');
+                    hasPlan = true;
+                    document.getElementById('plan-status').textContent = 'ACTIVE';
+                    document.getElementById('plan-status').style.color = 'var(--nerv-green)';
+                    
+                    // Reset cached plans
+                    weeklyPlan = null;
+                    todayPlan = null;
+                    
+                    // Switch to weekly view
+                    document.querySelector('.nerv-button[data-section="weekly"]').click();
+                } else {
+                    showToast('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                // Hide loading indicator
+                document.getElementById('loading-generate').classList.remove('active');
+                document.getElementById('generate-button').style.display = 'inline-block';
+                showToast('Error: ' + error.message);
+            });
+        }
+        
+        // Load weekly plan data
+        function loadWeeklyPlan() {
+            // Skip if already loaded
+            if (weeklyPlan) return;
+            
+            // Show loading indicators
+            document.getElementById('loading-weekly-overview').classList.add('active');
+            document.getElementById('loading-daily-meals').classList.add('active');
+            document.getElementById('loading-meal-prep').classList.add('active');
+            document.getElementById('loading-grocery').classList.add('active');
+            
+            // Fetch data
+            fetch('/api/weekly')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        weeklyPlan = data.plan;
+                        renderWeeklyPlan(weeklyPlan);
+                    } else {
+                        showToast('Error: ' + data.message);
+                    }
+                    
+                    // Hide loading indicators
+                    document.getElementById('loading-weekly-overview').classList.remove('active');
+                    document.getElementById('loading-daily-meals').classList.remove('active');
+                    document.getElementById('loading-meal-prep').classList.remove('active');
+                    document.getElementById('loading-grocery').classList.remove('active');
+                })
+                .catch(error => {
+                    showToast('Error: ' + error.message);
+                    
+                    // Hide loading indicators
+                    document.getElementById('loading-weekly-overview').classList.remove('active');
+                    document.getElementById('loading-daily-meals').classList.remove('active');
+                    document.getElementById('loading-meal-prep').classList.remove('active');
+                    document.getElementById('loading-grocery').classList.remove('active');
+                });
+        }
+        
+        // Load today's plan
+        function loadTodayPlan() {
+            // Skip if already loaded
+            if (todayPlan) return;
+            
+            // Show loading indicator
+            document.getElementById('loading-today').classList.add('active');
+            
+            // Fetch data
+            fetch('/api/today')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        todayPlan = data.plan;
+                        renderTodayPlan(todayPlan);
+                    } else {
+                        showToast('Error: ' + data.message);
+                    }
+                    
+                    // Hide loading indicator
+                    document.getElementById('loading-today').classList.remove('active');
+                })
+                .catch(error => {
+                    showToast('Error: ' + error.message);
+                    
+                    // Hide loading indicator
+                    document.getElementById('loading-today').classList.remove('active');
+                });
+        }
+        
+        // Render weekly plan
+        function renderWeeklyPlan(plan) {
+            renderWeeklyOverview(plan);
+            renderDailyMeals(plan.daily_plans);
+            renderMealPrep(plan.meal_prep);
+            renderGroceryLists(plan.grocery_lists);
+        }
+        
+        // Render weekly overview
+        function renderWeeklyOverview(plan) {
+            const container = document.getElementById('weekly-overview');
+            
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const sunday = new Date(now);
+            sunday.setDate(now.getDate() - dayOfWeek);
+            
+            const saturday = new Date(sunday);
+            saturday.setDate(sunday.getDate() + 6);
+            
+            const dateRange = formatDate(sunday) + ' - ' + formatDate(saturday);
+            
+            container.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Calorie Goal:</strong> <span class="text-success">${plan.overview.calorie_goal}</span></p>
+                        <p><strong>Protein Goal:</strong> <span class="text-success">${plan.overview.protein_goal}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> <span class="text-success">ACTIVE</span></p>
+                        <p><strong>Period:</strong> <span class="text-info">${dateRange}</span></p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p><strong>Summary:</strong> ${plan.overview.summary}</p>
+                </div>
+            `;
+        }
+        
+        // Render daily meals
+        function renderDailyMeals(dailyPlans) {
+            const container = document.getElementById('daily-meals-container');
+            container.innerHTML = '';
+            
+            for (const [day, plan] of Object.entries(dailyPlans)) {
+                const dayCard = document.createElement('div');
+                dayCard.className = 'nerv-card';
+                
+                // Create day header
+                const header = document.createElement('div');
+                header.className = 'nerv-card-header';
+                header.textContent = day.charAt(0).toUpperCase() + day.slice(1);
+                dayCard.appendChild(header);
+                
+                // Create day body
+                const body = document.createElement('div');
+                body.className = 'nerv-card-body';
+                
+                // Add status badges if needed
+                if (plan.is_prep_day) {
+                    const prepBadge = document.createElement('div');
+                    prepBadge.className = 'nerv-status nerv-status-prep';
+                    prepBadge.textContent = 'Prep Day';
+                    body.appendChild(prepBadge);
+                }
+                
+                if (plan.is_no_cook_dinner) {
+                    const noCookBadge = document.createElement('div');
+                    noCookBadge.className = 'nerv-status nerv-status-no-cook';
+                    noCookBadge.textContent = 'No-Cook Dinner';
+                    body.appendChild(noCookBadge);
+                }
+                
+                // Create meal containers
+                const row = document.createElement('div');
+                row.className = 'row';
+                
+                // Left column (breakfast, am snack, lunch)
+                const leftCol = document.createElement('div');
+                leftCol.className = 'col-md-6';
+                
+                leftCol.appendChild(createMealCard('Breakfast', plan.breakfast));
+                leftCol.appendChild(createMealCard('AM Snack', plan.am_snack));
+                leftCol.appendChild(createMealCard('Lunch', plan.lunch));
+                
+                // Right column (pm snack, dinner, summary)
+                const rightCol = document.createElement('div');
+                rightCol.className = 'col-md-6';
+                
+                rightCol.appendChild(createMealCard('PM Snack', plan.pm_snack));
+                rightCol.appendChild(createMealCard('Dinner', plan.dinner));
+                
+                // Add daily totals
+                const totalProtein = plan.breakfast.protein + plan.am_snack.protein + plan.lunch.protein + 
+                                     plan.pm_snack.protein + plan.dinner.protein;
+                const totalCarbs = plan.breakfast.carbs + plan.am_snack.carbs + plan.lunch.carbs + 
+                                   plan.pm_snack.carbs + plan.dinner.carbs;
+                const totalFats = plan.breakfast.fats + plan.am_snack.fats + plan.lunch.fats + 
+                                  plan.pm_snack.fats + plan.dinner.fats;
+                const totalCalories = plan.breakfast.calories + plan.am_snack.calories + plan.lunch.calories + 
+                                     plan.pm_snack.calories + plan.dinner.calories;
+                
+                const summaryCard = document.createElement('div');
+                summaryCard.className = 'nerv-card mt-3';
+                
+                const summaryHeader = document.createElement('div');
+                summaryHeader.className = 'nerv-card-header';
+                summaryHeader.textContent = 'Daily Totals';
+                summaryCard.appendChild(summaryHeader);
+                
+                const summaryBody = document.createElement('div');
+                summaryBody.className = 'nerv-card-body';
+                
+                // Add macro bar
+                const proteinPct = Math.round((totalProtein * 4 / totalCalories) * 100);
+                const carbsPct = Math.round((totalCarbs * 4 / totalCalories) * 100);
+                const fatsPct = Math.round((totalFats * 9 / totalCalories) * 100);
+                
+                const macroBar = document.createElement('div');
+                macroBar.className = 'nerv-macro-bar';
+                
+                const proteinFill = document.createElement('div');
+                proteinFill.className = 'nerv-macro-fill-protein';
+                proteinFill.style.width = proteinPct + '%';
+                macroBar.appendChild(proteinFill);
+                
+                const carbsFill = document.createElement('div');
+                carbsFill.className = 'nerv-macro-fill-carbs';
+                carbsFill.style.width = carbsPct + '%';
+                macroBar.appendChild(carbsFill);
+                
+                const fatsFill = document.createElement('div');
+                fatsFill.className = 'nerv-macro-fill-fats';
+                fatsFill.style.width = fatsPct + '%';
+                macroBar.appendChild(fatsFill);
+                
+                summaryBody.appendChild(macroBar);
+                
+                // Add totals
+                const totalsRow = document.createElement('div');
+                totalsRow.className = 'row text-center';
+                
+                totalsRow.innerHTML = `
+                    <div class="col-3">
+                        <h5 style="color: var(--nerv-red)">${totalCalories}</h5>
+                        <small>Calories</small>
+                    </div>
+                    <div class="col-3">
+                        <h5 style="color: var(--nerv-blue)">${totalProtein}g</h5>
+                        <small>Protein</small>
+                    </div>
+                    <div class="col-3">
+                        <h5 style="color: var(--nerv-green)">${totalCarbs}g</h5>
+                        <small>Carbs</small>
+                    </div>
+                    <div class="col-3">
+                        <h5 style="color: var(--nerv-yellow)">${totalFats}g</h5>
+                        <small>Fats</small>
+                    </div>
+                `;
+                
+                summaryBody.appendChild(totalsRow);
+                summaryCard.appendChild(summaryBody);
+                
+                // Add decorations
+                ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                    const corner = document.createElement('div');
+                    corner.className = 'corner-decoration corner-' + pos;
+                    summaryCard.appendChild(corner);
+                });
+                
+                rightCol.appendChild(summaryCard);
+                
+                // Add columns to row
+                row.appendChild(leftCol);
+                row.appendChild(rightCol);
+                
+                // Add row to body
+                body.appendChild(row);
+                
+                // Add body to card
+                dayCard.appendChild(body);
+                
+                // Add decorations
+                ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                    const corner = document.createElement('div');
+                    corner.className = 'corner-decoration corner-' + pos;
+                    dayCard.appendChild(corner);
+                });
+                
+                // Add card to container
+                container.appendChild(dayCard);
+            }
+        }
+        
+        // Create a meal card
+        function createMealCard(title, meal) {
+            const card = document.createElement('div');
+            card.className = 'nerv-meal-card';
+            
+            const header = document.createElement('div');
+            header.className = 'nerv-meal-header';
+            
+            const titleElement = document.createElement('h5');
+            titleElement.className = 'nerv-meal-title';
+            titleElement.textContent = title;
+            header.appendChild(titleElement);
+            
+            card.appendChild(header);
+            
+            const body = document.createElement('div');
+            body.className = 'nerv-meal-body';
+            
+            const description = document.createElement('p');
+            description.textContent = meal.description;
+            body.appendChild(description);
+            
+            // Add portion sizes if available
+            if (meal.portion_sizes) {
+                const portionSizes = document.createElement('div');
+                portionSizes.className = 'portion-sizes';
+                
+                for (const [type, value] of Object.entries(meal.portion_sizes)) {
+                    if (value) {
+                        const portionItem = document.createElement('div');
+                        portionItem.className = 'portion-size-item';
+                        
+                        const label = document.createElement('span');
+                        label.className = 'portion-label';
+                        label.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ':';
+                        
+                        const portionValue = document.createElement('span');
+                        portionValue.className = 'portion-value';
+                        portionValue.textContent = value;
+                        
+                        portionItem.appendChild(label);
+                        portionItem.appendChild(portionValue);
+                        portionSizes.appendChild(portionItem);
+                    }
+                }
+                
+                body.appendChild(portionSizes);
+            }
+            
+            // Add macros
+            const macros = document.createElement('div');
+            macros.className = 'nerv-macros';
+            
+            macros.innerHTML = `
+                <span class="nerv-macro nerv-macro-protein">${meal.protein}g protein</span>
+                <span class="nerv-macro nerv-macro-carbs">${meal.carbs}g carbs</span>
+                <span class="nerv-macro nerv-macro-fats">${meal.fats}g fats</span>
+                <span class="nerv-macro nerv-macro-calories">${meal.calories} calories</span>
+            `;
+            
+            body.appendChild(macros);
+            card.appendChild(body);
+            
+            return card;
+        }
+        
+        // Render meal prep
+        function renderMealPrep(mealPrep) {
+            const container = document.getElementById('meal-prep-container');
+            container.innerHTML = '';
+            
+            const row = document.createElement('div');
+            row.className = 'row';
+            
+            // Sunday prep
+            const sundayCol = document.createElement('div');
+            sundayCol.className = 'col-md-6';
+            
+            const sundayCard = document.createElement('div');
+            sundayCard.className = 'nerv-card';
+            
+            const sundayHeader = document.createElement('div');
+            sundayHeader.className = 'nerv-card-header';
+            sundayHeader.textContent = 'Sunday Meal Prep';
+            sundayCard.appendChild(sundayHeader);
+            
+            const sundayBody = document.createElement('div');
+            sundayBody.className = 'nerv-card-body';
+            sundayBody.innerHTML = mealPrep.sunday.replace(/\n/g, '<br>');
+            sundayCard.appendChild(sundayBody);
+            
+            // Add decorations
+            ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                const corner = document.createElement('div');
+                corner.className = 'corner-decoration corner-' + pos;
+                sundayCard.appendChild(corner);
+            });
+            
+            sundayCol.appendChild(sundayCard);
+            
+            // Wednesday prep
+            const wednesdayCol = document.createElement('div');
+            wednesdayCol.className = 'col-md-6';
+            
+            const wednesdayCard = document.createElement('div');
+            wednesdayCard.className = 'nerv-card';
+            
+            const wednesdayHeader = document.createElement('div');
+            wednesdayHeader.className = 'nerv-card-header';
+            wednesdayHeader.textContent = 'Wednesday Meal Prep';
+            wednesdayCard.appendChild(wednesdayHeader);
+            
+            const wednesdayBody = document.createElement('div');
+            wednesdayBody.className = 'nerv-card-body';
+            wednesdayBody.innerHTML = mealPrep.wednesday.replace(/\n/g, '<br>');
+            wednesdayCard.appendChild(wednesdayBody);
+            
+            // Add decorations
+            ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                const corner = document.createElement('div');
+                corner.className = 'corner-decoration corner-' + pos;
+                wednesdayCard.appendChild(corner);
+            });
+            
+            wednesdayCol.appendChild(wednesdayCard);
+            
+            row.appendChild(sundayCol);
+            row.appendChild(wednesdayCol);
+            container.appendChild(row);
+        }
+        
+        // Render grocery lists
+        function renderGroceryLists(groceryLists) {
+            const container = document.getElementById('grocery-lists-container');
+            container.innerHTML = '';
+            
+            const row = document.createElement('div');
+            row.className = 'row';
+            
+            // Sunday groceries
+            const sundayCol = document.createElement('div');
+            sundayCol.className = 'col-md-6';
+            
+            const sundayCard = document.createElement('div');
+            sundayCard.className = 'nerv-card';
+            
+            const sundayHeader = document.createElement('div');
+            sundayHeader.className = 'nerv-card-header';
+            sundayHeader.textContent = 'Sunday Grocery List';
+            sundayCard.appendChild(sundayHeader);
+            
+            const sundayBody = document.createElement('div');
+            sundayBody.className = 'nerv-card-body';
+            
+            const sundayList = document.createElement('ul');
+            sundayList.className = 'nerv-list';
+            
+            groceryLists.sunday.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.className = 'nerv-list-item';
+                listItem.textContent = item;
+                sundayList.appendChild(listItem);
+            });
+            
+            sundayBody.appendChild(sundayList);
+            sundayCard.appendChild(sundayBody);
+            
+            // Add decorations
+            ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                const corner = document.createElement('div');
+                corner.className = 'corner-decoration corner-' + pos;
+                sundayCard.appendChild(corner);
+            });
+            
+            sundayCol.appendChild(sundayCard);
+            
+            // Wednesday groceries
+            const wednesdayCol = document.createElement('div');
+            wednesdayCol.className = 'col-md-6';
+            
+            const wednesdayCard = document.createElement('div');
+            wednesdayCard.className = 'nerv-card';
+            
+            const wednesdayHeader = document.createElement('div');
+            wednesdayHeader.className = 'nerv-card-header';
+            wednesdayHeader.textContent = 'Wednesday Grocery List';
+            wednesdayCard.appendChild(wednesdayHeader);
+            
+            const wednesdayBody = document.createElement('div');
+            wednesdayBody.className = 'nerv-card-body';
+            
+            const wednesdayList = document.createElement('ul');
+            wednesdayList.className = 'nerv-list';
+            
+            groceryLists.wednesday.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.className = 'nerv-list-item';
+                listItem.textContent = item;
+                wednesdayList.appendChild(listItem);
+            });
+            
+            wednesdayBody.appendChild(wednesdayList);
+            wednesdayCard.appendChild(wednesdayBody);
+            
+            // Add decorations
+            ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                const corner = document.createElement('div');
+                corner.className = 'corner-decoration corner-' + pos;
+                wednesdayCard.appendChild(corner);
+            });
+            
+            wednesdayCol.appendChild(wednesdayCard);
+            
+            row.appendChild(sundayCol);
+            row.appendChild(wednesdayCol);
+            container.appendChild(row);
+        }
+        
+        // Render today's plan
+        function renderTodayPlan(plan) {
+            const container = document.getElementById('today-container');
+            container.innerHTML = '';
+            
+            const card = document.createElement('div');
+            card.className = 'nerv-card';
+            
+            const header = document.createElement('div');
+            header.className = 'nerv-card-header';
+            header.textContent = 'Current Day Nutritional Protocol';
+            card.appendChild(header);
+            
+            const body = document.createElement('div');
+            body.className = 'nerv-card-body';
+            
+            // Day header
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'row align-items-center mb-4';
+            
+            const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+            
+            dayHeader.innerHTML = `
+                <div class="col-md-6">
+                    <h3 style="color: var(--nerv-orange);">${todayName.toUpperCase()}</h3>
+                    <p id="today-date">${formatDate(new Date())}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    ${plan.is_prep_day ? '<span class="nerv-status nerv-status-prep">Prep Day</span>' : ''}
+                    ${plan.is_no_cook_dinner ? '<span class="nerv-status nerv-status-no-cook">No-Cook Dinner</span>' : ''}
+                </div>
+            `;
+            
+            body.appendChild(dayHeader);
+            
+            // Macro summary
+            const totalProtein = plan.breakfast.protein + plan.am_snack.protein + plan.lunch.protein + 
+                               plan.pm_snack.protein + plan.dinner.protein;
+            const totalCarbs = plan.breakfast.carbs + plan.am_snack.carbs + plan.lunch.carbs + 
+                             plan.pm_snack.carbs + plan.dinner.carbs;
+            const totalFats = plan.breakfast.fats + plan.am_snack.fats + plan.lunch.fats + 
+                            plan.pm_snack.fats + plan.dinner.fats;
+            const totalCalories = plan.breakfast.calories + plan.am_snack.calories + plan.lunch.calories + 
+                                plan.pm_snack.calories + plan.dinner.calories;
+            
+            const proteinPct = Math.round((totalProtein * 4 / totalCalories) * 100);
+            const carbsPct = Math.round((totalCarbs * 4 / totalCalories) * 100);
+            const fatsPct = Math.round((totalFats * 9 / totalCalories) * 100);
+            
+            const macroCard = document.createElement('div');
+            macroCard.className = 'nerv-card mb-4';
+            
+            const macroHeader = document.createElement('div');
+            macroHeader.className = 'nerv-card-header';
+            macroHeader.textContent = 'Nutritional Parameters';
+            macroCard.appendChild(macroHeader);
+            
+            const macroBody = document.createElement('div');
+            macroBody.className = 'nerv-card-body';
+            
+            const macroBar = document.createElement('div');
+            macroBar.className = 'nerv-macro-bar';
+            
+            const proteinFill = document.createElement('div');
+            proteinFill.className = 'nerv-macro-fill-protein';
+            proteinFill.style.width = proteinPct + '%';
+            macroBar.appendChild(proteinFill);
+            
+            const carbsFill = document.createElement('div');
+            carbsFill.className = 'nerv-macro-fill-carbs';
+            carbsFill.style.width = carbsPct + '%';
+            macroBar.appendChild(carbsFill);
+            
+            const fatsFill = document.createElement('div');
+            fatsFill.className = 'nerv-macro-fill-fats';
+            fatsFill.style.width = fatsPct + '%';
+            macroBar.appendChild(fatsFill);
+            
+            macroBody.appendChild(macroBar);
+            
+            const totalsRow = document.createElement('div');
+            totalsRow.className = 'row text-center mt-2';
+            
+            totalsRow.innerHTML = `
+                <div class="col-3">
+                    <h5 style="color: var(--nerv-red)">${totalCalories}</h5>
+                    <small>Calories</small>
+                </div>
+                <div class="col-3">
+                    <h5 style="color: var(--nerv-blue)">${totalProtein}g</h5>
+                    <small>Protein</small>
+                </div>
+                <div class="col-3">
+                    <h5 style="color: var(--nerv-green)">${totalCarbs}g</h5>
+                    <small>Carbs</small>
+                </div>
+                <div class="col-3">
+                    <h5 style="color: var(--nerv-yellow)">${totalFats}g</h5>
+                    <small>Fats</small>
+                </div>
+            `;
+            
+            macroBody.appendChild(totalsRow);
+            macroCard.appendChild(macroBody);
+            
+            // Add decorations
+            ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                const corner = document.createElement('div');
+                corner.className = 'corner-decoration corner-' + pos;
+                macroCard.appendChild(corner);
+            });
+            
+            body.appendChild(macroCard);
+            
+            // Meals
+            const meals = [
+                { title: 'Breakfast', meal: plan.breakfast, time: '07:30' },
+                { title: 'AM Snack', meal: plan.am_snack, time: '10:00' },
+                { title: 'Lunch', meal: plan.lunch, time: '13:00' },
+                { title: 'PM Snack', meal: plan.pm_snack, time: '16:00' },
+                { title: 'Dinner', meal: plan.dinner, time: '19:00' }
+            ];
+            
+            const mealsRow1 = document.createElement('div');
+            mealsRow1.className = 'row';
+            
+            mealsRow1.appendChild(createDetailedMealCard(meals[0].title, meals[0].meal, meals[0].time));
+            mealsRow1.appendChild(createDetailedMealCard(meals[1].title, meals[1].meal, meals[1].time));
+            
+            body.appendChild(mealsRow1);
+            
+            const lunchRow = document.createElement('div');
+            lunchRow.className = 'row';
+            lunchRow.appendChild(createDetailedMealCard(meals[2].title, meals[2].meal, meals[2].time, true));
+            
+            body.appendChild(lunchRow);
+            
+            const mealsRow2 = document.createElement('div');
+            mealsRow2.className = 'row';
+            
+            mealsRow2.appendChild(createDetailedMealCard(meals[3].title, meals[3].meal, meals[3].time));
+            mealsRow2.appendChild(createDetailedMealCard(meals[4].title, meals[4].meal, meals[4].time));
+            
+            body.appendChild(mealsRow2);
+            
+            // Prep instructions if it's a prep day
+            if (plan.is_prep_day) {
+                const prepCard = document.createElement('div');
+                prepCard.className = 'nerv-card mt-3';
+                
+                const prepHeader = document.createElement('div');
+                prepHeader.className = 'nerv-card-header';
+                prepHeader.textContent = 'Preparation Instructions';
+                prepCard.appendChild(prepHeader);
+                
+                const prepBody = document.createElement('div');
+                prepBody.className = 'nerv-card-body';
+                
+                prepBody.innerHTML = `
+                    <div style="color: var(--nerv-orange);">PREP DAY PROTOCOL ACTIVE</div>
+                    <p>${todayName === 'Sunday' ? 
+                      weeklyPlan.meal_prep.sunday.replace(/\n/g, '<br>') : 
+                      weeklyPlan.meal_prep.wednesday.replace(/\n/g, '<br>')}</p>
+                `;
+                
+                prepCard.appendChild(prepBody);
+                
+                // Add decorations
+                ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                    const corner = document.createElement('div');
+                    corner.className = 'corner-decoration corner-' + pos;
+                    prepCard.appendChild(corner);
+                });
+                
+                body.appendChild(prepCard);
+            }
+            
+            card.appendChild(body);
+            
+            // Add decorations
+            ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                const corner = document.createElement('div');
+                corner.className = 'corner-decoration corner-' + pos;
+                card.appendChild(corner);
+            });
+            
+            container.appendChild(card);
+        }
+        
+        // Create a detailed meal card for Today view
+        function createDetailedMealCard(title, meal, time, fullWidth = false) {
+            const col = document.createElement('div');
+            col.className = fullWidth ? 'col-12' : 'col-md-6';
+            
+            const card = document.createElement('div');
+            card.className = 'nerv-meal-card';
+            
+            const header = document.createElement('div');
+            header.className = 'nerv-meal-header';
+            
+            const titleElement = document.createElement('h5');
+            titleElement.className = 'nerv-meal-title';
+            titleElement.textContent = title;
+            header.appendChild(titleElement);
+            
+            const timeElement = document.createElement('span');
+            timeElement.textContent = time;
+            header.appendChild(timeElement);
+            
+            card.appendChild(header);
+            
+            const body = document.createElement('div');
+            body.className = 'nerv-meal-body';
+            
+            const description = document.createElement('p');
+            description.textContent = meal.description;
+            body.appendChild(description);
+            
+            // Add portion sizes if available
+            if (meal.portion_sizes) {
+                const portionSizes = document.createElement('div');
+                portionSizes.className = 'portion-sizes';
+                
+                for (const [type, value] of Object.entries(meal.portion_sizes)) {
+                    if (value) {
+                        const portionItem = document.createElement('div');
+                        portionItem.className = 'portion-size-item';
+                        
+                        const label = document.createElement('span');
+                        label.className = 'portion-label';
+                        label.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ':';
+                        
+                        const portionValue = document.createElement('span');
+                        portionValue.className = 'portion-value';
+                        portionValue.textContent = value;
+                        
+                        portionItem.appendChild(label);
+                        portionItem.appendChild(portionValue);
+                        portionSizes.appendChild(portionItem);
+                    }
+                }
+                
+                body.appendChild(portionSizes);
+            }
+            
+            // Add macros in a row
+            const macroRow = document.createElement('div');
+            macroRow.className = 'row text-center mt-3';
+            
+            macroRow.innerHTML = `
+                <div class="col-3">
+                    <h6>${meal.calories}</h6>
+                    <small class="text-muted">cal</small>
+                </div>
+                <div class="col-3">
+                    <h6>${meal.protein}g</h6>
+                    <small class="text-muted">protein</small>
+                </div>
+                <div class="col-3">
+                    <h6>${meal.carbs}g</h6>
+                    <small class="text-muted">carbs</small>
+                </div>
+                <div class="col-3">
+                    <h6>${meal.fats}g</h6>
+                    <small class="text-muted">fats</small>
+                </div>
+            `;
+            
+            body.appendChild(macroRow);
+            card.appendChild(body);
+            
+            col.appendChild(card);
+            return col;
+        }
+        
+        // Format date as YYYY.MM.DD
+        function formatDate(date) {
+            return date.getFullYear() + '.' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '.' + 
+                   String(date.getDate()).padStart(2, '0');
+        }
+        
+        // Show toast notification
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('nerv-toast');
+            toast.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, duration);
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
