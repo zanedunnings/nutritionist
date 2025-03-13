@@ -161,7 +161,54 @@ System:
 You are a nutritionist AI.
 
 Use the following details to create a structured 7-day meal plan:
-... (prompt text omitted for brevity) ...
+Goal & Macros:
+- Daily Calories: ~1,900–2,200
+- Daily Protein: ~200g
+- 5 meals per day: Breakfast (~35g protein, ~350 kcal), AM Snack (~30g protein, ~250 kcal), Lunch (~45g protein, ~450 kcal), PM Snack (~30g protein, ~250 kcal), Dinner (~60g protein, ~600–700 kcal)
+- Must be gluten-free (use GF alternatives: bread, pasta, sauces, etc.)
+Lifestyle Details:
+- Meal prep on Sunday and Wednesday
+- No-cook dinners on Monday and Wednesday (use leftovers from Sunday or Wednesday's prep)
+- 2 grocery runs: Sunday and Wednesday
+- Include: premade salad bags for quick veggies, premade protein shakes (e.g. Fairlife), leftover proteins (e.g. rotisserie chicken, ground turkey) to minimize effort.
+
+Plan Format:
+- Overview of the 7-day plan and calorie/protein goals
+- Day-by-Day breakdown (Sunday to Saturday), highlighting:
+  - Which days I'm cooking fresh vs. using leftovers
+  - Which days are "no-cook" dinners (Monday & Wednesday)
+- Meal Prep instructions:
+  - On Sunday: specify proteins, carbs, veggies to cook in bulk for Mon/Tue/(Wed)
+  - On Wednesday: specify proteins, carbs, veggies to cook for Thu/Fri/(Sat)
+- Grocery Lists:
+  - A Sunday grocery list
+  - A Wednesday grocery list
+- Suggestions for flavor combos, leftover usage, optional ingredients (like avocado, hummus, cheese if tolerated)
+- Format the plan with approximate protein/cals for each meal
+
+IMPORTANT DETAILS:
+- Include specific portion sizes for all meat (e.g., "6oz chicken breast", "4oz ground turkey")
+- Include portion sizes for carbs and vegetables where applicable
+- Be precise about quantities to help with meal prep and shopping
+
+Other Notes:
+- Adjust if weight loss is <1 lb/week or >2 lbs/week by tweaking calories as needed.
+- Keep it interesting, flexible, and seasonally varied.
+- I like most food types. Asian and medeterranian food are favorites.
+- Summarize clearly so it's easy to follow.
+- assume for fish it's hard to have left overs unless its from meal prepping
+
+Include each meal for every day of the week. Also include a list of groceries and what I should do for prep days.
+Ensure any meals provided have ingredients from a prior day of shopping for groceries. Don't include meals if the item wasn't included in groceries.
+
+Meals should vary in cuisine and use little "hacks" to make the macro nutrients work in my favor. 
+Here are some example meals to give you ideas:
+ - Stuffed Peppers w/ Ground Turkey (6oz) & Cauliflower Rice (1 cup)
+ - Asian Beef Bowl w/ Lean Ground Beef (5oz), Kimchi (1/2 cup) & Brown Rice (3/4 cup)
+ - Spaghetti w/ Turkey Meat (4oz) & Lentil Pasta (2oz dry)
+ - Thai Red Curry Shrimp (6oz) w/ Light Coconut Milk & Rice (3/4 cup)
+ - New York Strip Steak (5oz) & Bagged Salad (2 cups)
+ - Ground Chicken Lettuce Wraps (6oz chicken, 6 lettuce leaves)
 """
 
 # ---------- Anthropic API Call Functions ----------
@@ -391,6 +438,7 @@ def api_chat(data: dict):
         today_plan = meal_plan["meal_plan"]["daily_plans"][today]
         prompt = build_today_prompt(today_plan, today, message, meal_plan["meal_plan"])
         response = call_anthropic(prompt)
+        print("Recieved update from anthropic")
         plan_updated = False
         if "PLAN_UPDATE:" in response:
             plan_updated = process_plan_update(meal_plan, response, context, today if context=="today" else None)
