@@ -4,4 +4,5 @@ Jinja2  # If you're using templates
 anthropic
 python-dotenv  # If you're loading env variables from .env
 requests  # If you're making HTTP requests
+PyJWT
 

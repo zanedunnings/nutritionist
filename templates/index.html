@@ -474,6 +474,275 @@
                 text-align: center;
             }
         }
+
+        /* Theme Toggle Button */
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1001;
+        font-size: 0.8rem;
+    }
+    
+    /* Modern Theme Colors */
+    :root {
+        /* Original NERV theme colors */
+        --nerv-orange: #FF6600;
+        --nerv-red: #FF0000;
+        --nerv-blue: #0077CC;
+        --nerv-dark: #1A1A1A;
+        --nerv-light: #CCCCCC;
+        --nerv-green: #00CC77;
+        --nerv-yellow: #FFCC00;
+        
+        /* Modern theme colors */
+        --modern-primary: #6366f1;
+        --modern-secondary: #ec4899;
+        --modern-accent: #f59e0b;
+        --modern-background: #f9fafb;
+        --modern-card-bg: #ffffff;
+        --modern-text-dark: #1f2937;
+        --modern-text-medium: #4b5563;
+        --modern-text-light: #9ca3af;
+        --modern-border: #e5e7eb;
+        --modern-success: #10b981;
+        --modern-warning: #f97316;
+        --modern-danger: #ef4444;
+    }
+    
+    /* Modern Theme Styles */
+    body.modern-theme {
+        background-color: var(--modern-background);
+        color: var(--modern-text-dark);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    /* Header */
+    body.modern-theme .nerv-header {
+        background-color: var(--modern-card-bg);
+        border-bottom: 1px solid var(--modern-border);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    body.modern-theme .nerv-header::before {
+        display: none;
+    }
+    
+    body.modern-theme .nerv-title {
+        color: var(--modern-primary);
+        text-shadow: none;
+        font-weight: 600;
+    }
+    
+    body.modern-theme .nerv-logo {
+        color: var(--modern-text-medium);
+    }
+    
+    body.modern-theme .nerv-logo span {
+        color: var(--modern-secondary);
+    }
+    
+    /* Navigation buttons */
+    body.modern-theme .nerv-button {
+        background-color: var(--modern-card-bg);
+        color: var(--modern-text-medium);
+        border: 1px solid var(--modern-border);
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        padding: 10px 16px;
+        font-weight: 500;
+    }
+    
+    body.modern-theme .nerv-button::after {
+        display: none;
+    }
+    
+    body.modern-theme .nerv-button:hover, 
+    body.modern-theme .nerv-button.active {
+        background-color: var(--modern-primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        border-color: transparent;
+    }
+    
+    /* Cards */
+    body.modern-theme .nerv-card {
+        background-color: var(--modern-card-bg);
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    
+    body.modern-theme .nerv-card::before {
+        display: none;
+    }
+    
+    body.modern-theme .nerv-card-header {
+        background-color: var(--modern-card-bg);
+        color: var(--modern-text-dark);
+        border-bottom: 1px solid var(--modern-border);
+        padding: 16px 20px;
+        font-weight: 600;
+    }
+    
+    body.modern-theme .nerv-card-header::before,
+    body.modern-theme .nerv-card-header::after {
+        display: none;
+    }
+    
+    body.modern-theme .nerv-card-body {
+        background-color: var(--modern-card-bg);
+        padding: 20px;
+    }
+    
+    /* Remove grid decoration for modern theme */
+    body.modern-theme .grid-decoration {
+        display: none;
+    }
+    
+    /* Hide corner decorations for modern theme */
+    body.modern-theme .corner-decoration {
+        display: none;
+    }
+    
+    /* Meal cards */
+    body.modern-theme .nerv-meal-card {
+        background-color: var(--modern-card-bg);
+        border: 1px solid var(--modern-border);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    }
+    
+    body.modern-theme .nerv-meal-header {
+        background-color: rgba(0, 0, 0, 0.01);
+        border-bottom: 1px solid var(--modern-border);
+        padding: 12px 16px;
+    }
+    
+    body.modern-theme .nerv-meal-title {
+        color: var(--modern-primary);
+        font-weight: 600;
+    }
+    
+    /* Portion sizes display */
+    body.modern-theme .portion-sizes {
+        background-color: rgba(99, 102, 241, 0.03);
+        border-left: 3px solid var(--modern-primary);
+        border-radius: 0 6px 6px 0;
+    }
+    
+    body.modern-theme .portion-size-item::before {
+        color: var(--modern-primary);
+    }
+    
+    body.modern-theme .portion-label {
+        color: var(--modern-text-medium);
+    }
+    
+    body.modern-theme .portion-value {
+        color: var(--modern-primary);
+    }
+    
+    /* Macros display */
+    body.modern-theme .nerv-macro {
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    body.modern-theme .nerv-macro-protein {
+        background-color: rgba(37, 99, 235, 0.1);
+        border-color: transparent;
+        color: #2563eb;
+    }
+    
+    body.modern-theme .nerv-macro-carbs {
+        background-color: rgba(16, 185, 129, 0.1);
+        border-color: transparent;
+        color: #10b981;
+    }
+    
+    body.modern-theme .nerv-macro-fats {
+        background-color: rgba(245, 158, 11, 0.1);
+        border-color: transparent;
+        color: #f59e0b;
+    }
+    
+    body.modern-theme .nerv-macro-calories {
+        background-color: rgba(239, 68, 68, 0.1);
+        border-color: transparent;
+        color: #ef4444;
+    }
+    
+    /* Macro progress bars */
+    body.modern-theme .nerv-macro-bar {
+        height: 8px;
+        background-color: var(--modern-border);
+        border: none;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    body.modern-theme .nerv-macro-fill-protein {
+        background-color: #2563eb;
+    }
+    
+    body.modern-theme .nerv-macro-fill-carbs {
+        background-color: #10b981;
+    }
+    
+    body.modern-theme .nerv-macro-fill-fats {
+        background-color: #f59e0b;
+    }
+    
+    /* Status indicators */
+    body.modern-theme .nerv-status {
+        border-radius: 20px;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+    
+    body.modern-theme .nerv-status-prep {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+    
+    body.modern-theme .nerv-status-no-cook {
+        background-color: rgba(37, 99, 235, 0.1);
+        color: #2563eb;
+    }
+    
+    /* Grocery list */
+    body.modern-theme .nerv-list-item {
+        border-left: 3px solid var(--modern-primary);
+        background-color: rgba(99, 102, 241, 0.03);
+        border-radius: 0 6px 6px 0;
+        padding: 10px 15px;
+    }
+    
+    body.modern-theme .nerv-list-item::before {
+        color: var(--modern-primary);
+    }
+    
+    /* Loading spinner */
+    body.modern-theme .nerv-spinner {
+        border-color: rgba(99, 102, 241, 0.2);
+        border-top-color: var(--modern-primary);
+    }
+    
+    /* Toast notifications */
+    body.modern-theme .nerv-toast {
+        background-color: var(--modern-card-bg);
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        color: var(--modern-text-dark);
+    }
     </style>
 </head>
 <body>
@@ -494,13 +763,18 @@
                 </div>
             </div>
         </header>
+
+        <button id="theme-toggle" class="nerv-button theme-toggle">Switch Theme</button>
+
         
         <div class="nerv-nav">
             <button class="nerv-button active" data-section="home">Home</button>
             <button class="nerv-button" data-section="generate">Generate Plan</button>
             <button class="nerv-button" data-section="weekly">Weekly View</button>
             <button class="nerv-button" data-section="today">Today's Meals</button>
+            <button class="nerv-button" data-section="auth">Login</button>
         </div>
+        
         
         <!-- Home Section -->
         <section id="home" class="nerv-section active">
@@ -652,30 +926,196 @@
             </div>
         </section>
     </div>
+
+    <!-- Authentication Section -->
+<section id="auth" class="nerv-section">
+    <div class="nerv-card">
+      <div class="nerv-card-header">Phone Login / Registration</div>
+      <div class="nerv-card-body">
+        <!-- OTP Request Form -->
+        <form id="otp-request-form">
+          <div class="mb-3">
+            <label for="auth-phone" class="form-label">Phone Number</label>
+            <input type="text" id="auth-phone" name="phone" class="form-control" placeholder="Enter your phone number" required />
+          </div>
+          <button type="submit" class="nerv-button">Request OTP</button>
+        </form>
+        <hr />
+        <!-- OTP Verification Form -->
+        <form id="otp-verify-form">
+          <div class="mb-3">
+            <label for="auth-otp" class="form-label">OTP</label>
+            <input type="text" id="auth-otp" name="otp" class="form-control" placeholder="Enter OTP" required />
+          </div>
+          <button type="submit" class="nerv-button">Verify OTP</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  
     
     <!-- JavaScript -->
     <script>
-        // Global state
         let weeklyPlan = null;
         let todayPlan = null;
         let hasPlan = false;
-        
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check plan status
-            checkPlanStatus();
+
+        function hideOtherNavButtons() {
+            // Hide all nav buttons except the one for auth
+            document.querySelectorAll('.nerv-button[data-section]').forEach(btn => {
+                if (btn.getAttribute('data-section') !== "auth") {
+                    btn.style.display = "none";
+                }
+            });
+        }
+
+        function showAllNavButtons() {
+            // Make all nav buttons visible
+            document.querySelectorAll('.nerv-button[data-section]').forEach(btn => {
+                btn.style.display = "";
+            });
+        }
+
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token || token.trim() === "") {
+                // No token: show only the auth section and hide other nav buttons.
+                document.querySelectorAll('.nerv-section').forEach(section => section.classList.remove('active'));
+                document.getElementById('auth').classList.add('active');
+                document.querySelectorAll('.nerv-button[data-section]').forEach(btn => btn.classList.remove('active'));
+                const authBtn = document.querySelector('.nerv-button[data-section="auth"]');
+                if (authBtn) authBtn.classList.add('active');
+                hideOtherNavButtons();
+                return false;
+            }
+            showAllNavButtons();
+            return true;
+        }
+
+        function setupNavigation() {
+    const navButtons = document.querySelectorAll('.nerv-button[data-section]');
+    navButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const sectionId = this.getAttribute('data-section');
+
+            // Always allow clicking the auth button.
+            if (sectionId === 'auth') {
+                document.querySelectorAll('.nerv-section').forEach(section => section.classList.remove('active'));
+                document.querySelectorAll('.nerv-button[data-section]').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('auth').classList.add('active');
+                this.classList.add('active');
+                return;
+            }
             
-            // Update date/time
+            // For other sections, check for token
+            const token = localStorage.getItem('access_token');
+            if (!token || token.trim() === "") {
+                e.preventDefault();
+                alert("Please log in to access this section.");
+                // Force display of the auth section.
+                document.querySelectorAll('.nerv-section').forEach(section => section.classList.remove('active'));
+                document.getElementById('auth').classList.add('active');
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                const authBtn = document.querySelector('.nerv-button[data-section="auth"]');
+                if (authBtn) authBtn.classList.add('active');
+                return;
+            }
+            
+            // If token exists, navigate normally.
+            document.querySelectorAll('.nerv-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.nerv-button[data-section]').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            this.classList.add('active');
+
+            // Trigger additional loading for specific sections
+            if (sectionId === 'weekly') {
+                loadWeeklyPlan();
+            }
+            if (sectionId === 'today') {
+                loadTodayPlan();
+            }
+        });
+    });
+}
+
+
+        // Function to update the auth button based on login state.
+        function updateAuthButton() {
+            const authBtn = document.querySelector('.nerv-button[data-section="auth"]');
+            const token = localStorage.getItem('access_token');
+            if (token && token.trim() !== "") {
+                // If logged in, change text to Logout and add logout functionality.
+                authBtn.textContent = "Logout";
+                // Remove any previous click listeners to avoid duplicates.
+                authBtn.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('access_token');
+                    alert("You have been logged out.");
+                    window.location.reload();
+                };
+            } else {
+                // If not logged in, ensure it says Login.
+                authBtn.textContent = "Login";
+                // Reset the click event so that it uses the navigation logic.
+                authBtn.onclick = null; // let setupNavigation's event listener handle it.
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // First, check if an access token exists; if not, show the auth section.
+            if (!checkAuth()) {
+                console.log("User not authenticated. Showing auth section only.");
+            } else {
+                console.log("User authenticated. Proceeding with initialization.");
+            }
+            
+            // Update the auth button (login/logout) based on current state.
+            updateAuthButton();
+
+            // Continue with the rest of initialization.
+            checkPlanStatus();
             updateDateTime();
             setInterval(updateDateTime, 1000);
-            
-            // Navigation handlers
             setupNavigation();
-            
-            // Generate button handler
             document.getElementById('generate-button').addEventListener('click', generateMealPlan);
         });
-        
+
+
+        // --- OTP Verification Form Handler ---
+        document.getElementById('otp-verify-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const phone = document.getElementById('auth-phone').value.trim();
+            const otp = document.getElementById('auth-otp').value.trim();
+            if (!phone || !otp) {
+                alert("Please enter both phone number and OTP.");
+                return;
+            }
+            fetch('/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone, otp: otp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    // Save the token and then update the UI.
+                    localStorage.setItem('access_token', data.access_token);
+                    alert("Login successful!");
+                    // Now that the user is authenticated, show all nav buttons and navigate to home.
+                    showAllNavButtons();
+                    // Trigger navigation to home.
+                    document.querySelector('.nerv-button[data-section="home"]').click();
+                } else {
+                    alert("Error: " + data.detail);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error verifying OTP: " + err.message);
+            });
+        });
+
+
         // Check if meal plan exists
         function checkPlanStatus() {
             fetch('/api/weekly')
@@ -714,33 +1154,6 @@
             document.getElementById('datetime').textContent = formattedDate + ' | ' + formattedTime;
         }
         
-        // Navigation setup
-        function setupNavigation() {
-            // Section navigation
-            document.querySelectorAll('.nerv-button[data-section]').forEach(button => {
-                button.addEventListener('click', function() {
-                    const sectionId = this.getAttribute('data-section');
-                    
-                    // Hide all sections and deactivate buttons
-                    document.querySelectorAll('.nerv-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    document.querySelectorAll('.nerv-button[data-section]').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    
-                    // Show selected section and activate button
-                    document.getElementById(sectionId).classList.add('active');
-                    this.classList.add('active');
-                    
-                    // Load data if needed
-                    if (sectionId === 'weekly' && hasPlan) {
-                        loadWeeklyPlan();
-                    } else if (sectionId === 'today' && hasPlan) {
-                        loadTodayPlan();
-                    }
-                });
-            });
             
             // Tab navigation
             document.querySelectorAll('.nerv-button[data-tab]').forEach(button => {
@@ -760,7 +1173,7 @@
                     this.classList.add('active');
                 });
             });
-        }
+        
         
         // Generate meal plan
         function generateMealPlan() {
@@ -1579,6 +1992,61 @@
                 toast.classList.remove('active');
             }, duration);
         }
+
+        // OTP Request Form Handler
+document.getElementById('otp-request-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const phone = document.getElementById('auth-phone').value.trim();
+  if (!phone) {
+    alert("Please enter a phone number.");
+    return;
+  }
+  fetch('/auth/request-otp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phone: phone })
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message);
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error requesting OTP: " + err.message);
+  });
+});
+
+
+
+    </script>
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('preferred-theme');
+            if (savedTheme === 'modern') {
+                body.classList.add('modern-theme');
+                themeToggle.textContent = 'Switch to NERV Theme';
+            }
+            
+            // Set up the theme toggle button
+            themeToggle.addEventListener('click', function() {
+                if (body.classList.contains('modern-theme')) {
+                    // Switch to NERV theme
+                    body.classList.remove('modern-theme');
+                    themeToggle.textContent = 'Switch to Modern Theme';
+                    localStorage.setItem('preferred-theme', 'nerv');
+                } else {
+                    // Switch to modern theme
+                    body.classList.add('modern-theme');
+                    themeToggle.textContent = 'Switch to NERV Theme';
+                    localStorage.setItem('preferred-theme', 'modern');
+                }
+            });
+        });
     </script>
 </body>
 </html><!DOCTYPE html>

@@ -8,9 +8,19 @@ import anthropic
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
-
+from pydantic import BaseModel
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+import random
 # ---------- SQLite Helper Functions ----------
 DATABASE = "meal_plans.db"
+OTP_EXPIRATION_MINUTES = 5
+
+AUTH_SECRET_KEY = os.getenv("AUTH_SECRET_KEY")
+if not AUTH_SECRET_KEY:
+    raise ValueError("AUTH_SECRET_KEY environment variable is not set")
+
+ALGORITHM = "HS256"
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -363,9 +373,115 @@ Respond concisely in a technical, precise style.
 """
     return prompt
 
+# ---------- Phone Number Authentication Models & Endpoints ----------
+
+class RequestOTP(BaseModel):
+    phone: str
+
+class VerifyOTP(BaseModel):
+    phone: str
+    otp: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+def send_sms(phone: str, otp: str):
+    # Replace with an actual SMS API integration in production
+    print(f"Sending OTP {otp} to phone {phone}")
+
+def generate_otp():
+    return f"{random.randint(100000, 999999)}"
+
+
 # ---------- FastAPI Application ----------
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")  # Optional if you use templates
+
+
+@app.post("/auth/request-otp")
+def request_otp(data: RequestOTP):
+    phone = data.phone
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Create a user record if it doesn't exist
+    cursor.execute("SELECT * FROM users WHERE phone = ?", (phone,))
+    user = cursor.fetchone()
+    if not user:
+        cursor.execute("INSERT INTO users (phone) VALUES (?)", (phone,))
+        conn.commit()  # commit the new user
+    
+    # Generate OTP and store it
+    otp = generate_otp()
+    expires_at = datetime.utcnow() + timedelta(minutes=OTP_EXPIRATION_MINUTES)
+    cursor.execute(
+        "INSERT INTO otps (phone, otp, expires_at) VALUES (?, ?, ?)",
+        (phone, otp, expires_at.isoformat())
+    )
+    conn.commit()
+    conn.close()
+    
+    send_sms(phone, otp)  # Replace this with actual SMS sending in production
+    return {"message": "OTP sent"}
+
+
+@app.post("/auth/verify-otp", response_model=Token)
+def verify_otp(data: VerifyOTP):
+    phone = data.phone
+    otp = data.otp
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM otps WHERE phone = ? AND otp = ? AND used = 0", (phone, otp))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+    
+    expires_at = datetime.fromisoformat(row["expires_at"])
+    if datetime.utcnow() > expires_at:
+        conn.close()
+        raise HTTPException(status_code=400, detail="OTP expired")
+    
+    cursor.execute("UPDATE otps SET used = 1 WHERE id = ?", (row["id"],))
+    cursor.execute("SELECT * FROM users WHERE phone = ?", (phone,))
+    user = cursor.fetchone()
+    if not user:
+        cursor.execute("INSERT INTO users (phone) VALUES (?)", (phone,))
+        conn.commit()
+        user_id = cursor.lastrowid
+    else:
+        user_id = user["id"]
+    conn.commit()
+    conn.close()
+    
+    payload = {
+        "sub": phone,
+        "user_id": user_id,
+        "exp": datetime.utcnow() + timedelta(hours=1)
+    }
+    token = jwt.encode(payload, AUTH_SECRET_KEY, algorithm=ALGORITHM)
+    return {"access_token": token, "token_type": "bearer"}
+
+http_bearer = HTTPBearer()
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(http_bearer)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, AUTH_SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.get("/users/me")
+def get_profile(current_user: dict = Depends(get_current_user)):
+    return {"phone": current_user["sub"], "user_id": current_user["user_id"]}
+
+
+
 
 @app.get("/")
 def index(request: Request):
@@ -374,6 +490,18 @@ def index(request: Request):
     plan_exists = get_meal_plan(week_key) is not None
     # If you have templates, you could render one:
     return templates.TemplateResponse("index.html", {"request": request, "has_plan": plan_exists})
+
+@app.get("/landing")
+def index(request: Request, theme: str = None):
+    """Index route to serve the main app page with optional theme parameter."""
+    week_key = get_week_key()
+    plan_exists = get_meal_plan(week_key) is not None
+    
+    # Pass the theme parameter to the template
+    return templates.TemplateResponse(
+        "landing.html", 
+        {"request": request, "theme": theme}
+    )
 
 @app.get("/api/weekly")
 def api_weekly():
