@@ -3,11 +3,56 @@ import json
 import sqlite3
 import traceback
 from datetime import datetime, timedelta
+import jwt
+from fastapi import FastAPI, HTTPException, Request, Depends, Header
+from fastapi.responses import JSONResponse
+from fastapi.templating import Jinja2Templates
+from typing import Optional
 
 import anthropic
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
+
+# ---------- Authentication Functions ----------
+SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key-here")  # Change this in production
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+async def get_current_user(authorization: str = Header(...)):
+    try:
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid authorization header")
+        
+        token = authorization.split(" ")[1]
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("user_id")
+        
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        # Verify user exists in database
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+        
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        return {"user_id": user_id}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 # ---------- SQLite Helper Functions ----------
 DATABASE = "meal_plans.db"
@@ -16,6 +61,38 @@ def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
+
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Create meal_plans table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS meal_plans (
+        week_key TEXT PRIMARY KEY,
+        plan TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
+    # Create modifications table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS modifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        week_key TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        context TEXT,
+        day TEXT,
+        response TEXT NOT NULL,
+        FOREIGN KEY (week_key) REFERENCES meal_plans(week_key)
+    )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+# Initialize database on startup
+init_db()
 
 def save_meal_plan(week_key: str, plan: dict):
     plan_json = json.dumps(plan)
@@ -271,14 +348,43 @@ def get_weekly_meal_plan():
     return meal_plan["meal_plan"]
 
 def generate_meal_plan():
-    meal_plan = call_claude(get_meal_prompt())
-    if "error" in meal_plan:
-        return None
-    week_key = get_week_key()
-    save_meal_plan(week_key, meal_plan)
-    with open(f"meal_plan_{get_week_key()[10:]}.json", "w") as f:
-        json.dump(meal_plan, f, indent=2)
-    return meal_plan
+    try:
+        print("Starting meal plan generation...")
+        
+        print("Calling Claude API to generate meal plan...")
+        meal_plan = call_claude(get_meal_prompt())
+        
+        if "error" in meal_plan:
+            print(f"Error generating meal plan: {meal_plan['error']}")
+            raise HTTPException(status_code=500, detail=meal_plan["error"])
+        
+        # Validate meal plan structure
+        if not isinstance(meal_plan, dict):
+            print("Error: Meal plan is not a dictionary")
+            raise HTTPException(status_code=500, detail="Invalid meal plan format")
+        
+        if "meal_plan" not in meal_plan:
+            print("Error: No 'meal_plan' key in response")
+            raise HTTPException(status_code=500, detail="Invalid meal plan structure")
+        
+        if "daily_plans" not in meal_plan["meal_plan"]:
+            print("Error: No 'daily_plans' key in meal plan")
+            raise HTTPException(status_code=500, detail="Invalid meal plan structure")
+        
+        print("Meal plan generated successfully, saving to database...")
+        # Save the meal plan
+        week_key = get_week_key()
+        save_meal_plan(week_key, meal_plan)
+        print("Meal plan saved successfully")
+        
+        return {"status": "success", "plan": meal_plan}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Unexpected error in generate_meal_plan: {str(e)}")
+        print(f"Error traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 def process_plan_update(meal_plan, response, context, day=None):
     try:
@@ -381,10 +487,15 @@ def api_weekly():
         week_key = get_week_key()
         meal_plan = get_meal_plan(week_key)
         if not meal_plan or "meal_plan" not in meal_plan:
-            raise HTTPException(status_code=404, detail="No meal plan found")
+            return {
+                "status": "success",
+                "plan": None,
+                "message": "No meal plan found. Please generate one first."
+            }
         return {"status": "success", "plan": meal_plan["meal_plan"]}
     except Exception as e:
-        traceback.print_exc()
+        print(f"Error in api_weekly: {str(e)}")
+        print(f"Error traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/today")
@@ -399,22 +510,6 @@ def api_today():
             raise HTTPException(status_code=404, detail=f"No meal plan found for {today}")
         today_plan = meal_plan["meal_plan"]["daily_plans"][today]
         return {"status": "success", "plan": today_plan}
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/generate")
-def api_generate():
-    try:
-        prompt = get_meal_prompt()
-        response = call_claude(prompt)
-        if "error" in response:
-            raise HTTPException(status_code=400, detail=response["error"])
-        week_key = get_week_key()
-        save_meal_plan(week_key, response)
-        with open(f"meal_plan_{week_key[10:]}.json", "w") as f:
-            json.dump(response, f, indent=2)
-        return {"status": "success", "message": "Meal plan generated successfully"}
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -446,6 +541,106 @@ def api_chat(data: dict):
         return {"status": "success", "message": response, "plan_updated": plan_updated}
     except Exception as e:
         traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/auth/request-otp")
+async def request_otp(phone_number: str):
+    try:
+        # In a real application, you would send an OTP via SMS
+        # For development, we'll just create a user and return a token
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Check if user exists
+        cursor.execute("SELECT user_id FROM users WHERE phone_number = ?", (phone_number,))
+        user = cursor.fetchone()
+        
+        if not user:
+            # Create new user
+            cursor.execute("INSERT INTO users (phone_number) VALUES (?)", (phone_number,))
+            user_id = cursor.lastrowid
+            conn.commit()
+        else:
+            user_id = user["user_id"]
+        
+        conn.close()
+        
+        # Create access token
+        access_token = create_access_token({"user_id": user_id})
+        
+        return {
+            "status": "success",
+            "message": "OTP sent successfully",
+            "access_token": access_token
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/auth/verify-otp")
+async def verify_otp(phone_number: str, otp: str):
+    try:
+        # In a real application, you would verify the OTP
+        # For development, we'll just return a token
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT user_id FROM users WHERE phone_number = ?", (phone_number,))
+        user = cursor.fetchone()
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        conn.close()
+        
+        # Create access token
+        access_token = create_access_token({"user_id": user["user_id"]})
+        
+        return {
+            "status": "success",
+            "message": "OTP verified successfully",
+            "access_token": access_token
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/generate")
+async def generate_meal_plan_endpoint():
+    try:
+        print("Starting meal plan generation...")
+        
+        print("Calling Claude API to generate meal plan...")
+        meal_plan = call_claude(get_meal_prompt())
+        
+        if "error" in meal_plan:
+            print(f"Error generating meal plan: {meal_plan['error']}")
+            raise HTTPException(status_code=500, detail=meal_plan["error"])
+        
+        # Validate meal plan structure
+        if not isinstance(meal_plan, dict):
+            print("Error: Meal plan is not a dictionary")
+            raise HTTPException(status_code=500, detail="Invalid meal plan format")
+        
+        if "meal_plan" not in meal_plan:
+            print("Error: No 'meal_plan' key in response")
+            raise HTTPException(status_code=500, detail="Invalid meal plan structure")
+        
+        if "daily_plans" not in meal_plan["meal_plan"]:
+            print("Error: No 'daily_plans' key in meal plan")
+            raise HTTPException(status_code=500, detail="Invalid meal plan structure")
+        
+        print("Meal plan generated successfully, saving to database...")
+        # Save the meal plan
+        week_key = get_week_key()
+        save_meal_plan(week_key, meal_plan)
+        print("Meal plan saved successfully")
+        
+        return {"status": "success", "plan": meal_plan}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Unexpected error in generate_meal_plan: {str(e)}")
+        print(f"Error traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ---------- Run the Application ----------
