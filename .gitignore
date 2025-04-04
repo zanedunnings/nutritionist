@@ -17,3 +17,8 @@ env/
 logs/
 *.swp
 
+.env
+data/*
+nutritionist-migrated/data/*
+nutritionist-migrated/.env
+

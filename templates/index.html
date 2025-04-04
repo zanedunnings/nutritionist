@@ -1359,27 +1359,8 @@
                     noCookBadge.textContent = 'No-Cook Dinner';
                     body.appendChild(noCookBadge);
                 }
-                
-                // Create meal containers
-                const row = document.createElement('div');
-                row.className = 'row';
-                
-                // Left column (breakfast, am snack, lunch)
-                const leftCol = document.createElement('div');
-                leftCol.className = 'col-md-6';
-                
-                leftCol.appendChild(createMealCard('Breakfast', plan.breakfast));
-                leftCol.appendChild(createMealCard('AM Snack', plan.am_snack));
-                leftCol.appendChild(createMealCard('Lunch', plan.lunch));
-                
-                // Right column (pm snack, dinner, summary)
-                const rightCol = document.createElement('div');
-                rightCol.className = 'col-md-6';
-                
-                rightCol.appendChild(createMealCard('PM Snack', plan.pm_snack));
-                rightCol.appendChild(createMealCard('Dinner', plan.dinner));
-                
-                // Add daily totals
+
+                // Add daily totals at the top
                 const totalProtein = plan.breakfast.protein + plan.am_snack.protein + plan.lunch.protein + 
                                      plan.pm_snack.protein + plan.dinner.protein;
                 const totalCarbs = plan.breakfast.carbs + plan.am_snack.carbs + plan.lunch.carbs + 
@@ -1390,7 +1371,7 @@
                                      plan.pm_snack.calories + plan.dinner.calories;
                 
                 const summaryCard = document.createElement('div');
-                summaryCard.className = 'nerv-card mt-3';
+                summaryCard.className = 'nerv-card mb-3';
                 
                 const summaryHeader = document.createElement('div');
                 summaryHeader.className = 'nerv-card-header';
@@ -1458,7 +1439,26 @@
                     summaryCard.appendChild(corner);
                 });
                 
-                rightCol.appendChild(summaryCard);
+                body.appendChild(summaryCard);
+                
+                // Create meal containers
+                const row = document.createElement('div');
+                row.className = 'row';
+                
+                // Left column (breakfast, am snack, lunch)
+                const leftCol = document.createElement('div');
+                leftCol.className = 'col-md-6';
+                
+                leftCol.appendChild(createMealCard('Breakfast', plan.breakfast));
+                leftCol.appendChild(createMealCard('AM Snack', plan.am_snack));
+                leftCol.appendChild(createMealCard('Lunch', plan.lunch));
+                
+                // Right column (pm snack, dinner)
+                const rightCol = document.createElement('div');
+                rightCol.className = 'col-md-6';
+                
+                rightCol.appendChild(createMealCard('PM Snack', plan.pm_snack));
+                rightCol.appendChild(createMealCard('Dinner', plan.dinner));
                 
                 // Add columns to row
                 row.appendChild(leftCol);

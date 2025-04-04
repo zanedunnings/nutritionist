@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Meal Plan</h1>
+        <button onclick="generateMealPlan()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+            Generate New Plan
+        </button>
+    </div>
+
+    <div id="loading" class="hidden">
+        <div class="flex justify-center items-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span class="ml-2">Generating meal plan...</span>
+        </div>
+    </div>
+
+    <div id="meal-plan" class="space-y-8">
+        <!-- Overview section -->
+        <div id="overview" class="bg-white rounded-lg shadow p-6 hidden">
+            <h2 class="text-xl font-semibold mb-4">Overview</h2>
+            <div id="overview-content" class="prose max-w-none"></div>
+        </div>
+
+        <!-- Daily plans section -->
+        <div id="daily-plans" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Daily plans will be loaded here -->
+        </div>
+
+        <!-- Grocery list section -->
+        <div id="grocery-list" class="bg-white rounded-lg shadow p-6 hidden">
+            <h2 class="text-xl font-semibold mb-4">Grocery List</h2>
+            <div id="grocery-list-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Grocery list will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getElementOrThrow(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        throw new Error(`Element with id '${id}' not found`);
+    }
+    return element;
+}
+
+async function generateMealPlan() {
+    try {
+        const loading = getElementOrThrow('loading');
+        const mealPlan = getElementOrThrow('meal-plan');
+        
+        loading.classList.remove('hidden');
+        
+        const response = await fetch('/api/meal-plan/generate', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.detail || 'Failed to generate meal plan');
+        }
+        
+        displayMealPlan(data);
+    } catch (error) {
+        console.error('Error:', error);
+        const mealPlan = getElementOrThrow('meal-plan');
+        mealPlan.innerHTML = `
+            <div class="col-span-full text-center text-red-500">
+                ${error.message || 'Failed to generate meal plan. Please try again.'}
+            </div>
+        `;
+    } finally {
+        const loading = getElementOrThrow('loading');
+        loading.classList.add('hidden');
+    }
+}
+
+function displayMealPlan(plan) {
+    try {
+        // Display overview if available
+        const overview = getElementOrThrow('overview');
+        const overviewContent = getElementOrThrow('overview-content');
+        if (plan.overview) {
+            overview.classList.remove('hidden');
+            overviewContent.innerHTML = plan.overview;
+        } else {
+            overview.classList.add('hidden');
+        }
+
+        // Display daily plans
+        const dailyPlans = getElementOrThrow('daily-plans');
+        let dailyPlansHtml = '';
+        
+        if (plan.daily_plans) {
+            for (const [day, meals] of Object.entries(plan.daily_plans)) {
+                dailyPlansHtml += `
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-xl font-semibold mb-4 capitalize">${day}</h2>
+                        <div class="space-y-4">
+                            ${Object.entries(meals).map(([meal, details]) => `
+                                <div>
+                                    <h3 class="font-medium capitalize">${meal}</h3>
+                                    <p class="text-gray-600">${details}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        dailyPlans.innerHTML = dailyPlansHtml;
+
+        // Display grocery list if available
+        const groceryList = getElementOrThrow('grocery-list');
+        const groceryListContent = getElementOrThrow('grocery-list-content');
+        if (plan.grocery_list) {
+            groceryList.classList.remove('hidden');
+            let groceryListHtml = '';
+            
+            for (const [category, items] of Object.entries(plan.grocery_list)) {
+                groceryListHtml += `
+                    <div>
+                        <h3 class="font-medium capitalize mb-2">${category}</h3>
+                        <ul class="list-disc pl-4">
+                            ${items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            groceryListContent.innerHTML = groceryListHtml;
+        } else {
+            groceryList.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Error displaying meal plan:', error);
+        const mealPlan = getElementOrThrow('meal-plan');
+        mealPlan.innerHTML = `
+            <div class="col-span-full text-center text-red-500">
+                Error displaying meal plan: ${error.message}
+            </div>
+        `;
+    }
+}
+
+// Load meal plan on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await fetch('/api/meal-plan', {
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data) {
+                displayMealPlan(data);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading meal plan:', error);
+    }
+});
+</script>
+{% endblock %} 

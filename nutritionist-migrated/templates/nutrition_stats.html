@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Stats - Nutritionist App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/app" class="text-xl font-bold">Nutritionist App</a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/app/dashboard" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="/app/meal-plan" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Meal Plan
+                        </a>
+                        <a href="/app/nutrition-stats" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Nutrition Stats
+                        </a>
+                        <a href="/app/grocery-list" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Grocery List
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        Nutrition Statistics
+                    </h3>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                        Your nutritional information and progress
+                    </p>
+                </div>
+                <div class="border-t border-gray-200">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            <!-- Daily Nutrition Summary -->
+                            <div class="bg-white shadow rounded-lg p-4">
+                                <h4 class="text-lg font-medium text-gray-900 mb-4">Daily Nutrition</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <h5 class="text-sm font-medium text-gray-500">Calories</h5>
+                                        <p class="text-2xl font-semibold text-gray-900">{{ nutrition_stats.daily_calories }}</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-medium text-gray-500">Protein</h5>
+                                        <p class="text-2xl font-semibold text-gray-900">{{ nutrition_stats.daily_protein }}g</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-medium text-gray-500">Carbs</h5>
+                                        <p class="text-2xl font-semibold text-gray-900">{{ nutrition_stats.daily_carbs }}g</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-sm font-medium text-gray-500">Fat</h5>
+                                        <p class="text-2xl font-semibold text-gray-900">{{ nutrition_stats.daily_fat }}g</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Weekly Progress -->
+                            <div class="bg-white shadow rounded-lg p-4">
+                                <h4 class="text-lg font-medium text-gray-900 mb-4">Weekly Progress</h4>
+                                <canvas id="weeklyProgressChart" class="w-full h-64"></canvas>
+                            </div>
+
+                            <!-- Nutrient Distribution -->
+                            <div class="bg-white shadow rounded-lg p-4">
+                                <h4 class="text-lg font-medium text-gray-900 mb-4">Nutrient Distribution</h4>
+                                <canvas id="nutrientDistributionChart" class="w-full h-64"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Recommendations -->
+                        <div class="mt-8">
+                            <h4 class="text-lg font-medium text-gray-900 mb-4">Recommendations</h4>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <ul class="list-disc list-inside space-y-2">
+                                    {% for recommendation in nutrition_stats.recommendations %}
+                                        <li class="text-gray-700">{{ recommendation }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check if user is authenticated
+        async function checkAuth() {
+            try {
+                const response = await fetch('/app/nutrition-stats', {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    console.log('Not authenticated, redirecting to login');
+                    window.location.href = '/auth/login';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = '/auth/login';
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/auth/login';
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Weekly Progress Chart
+            const weeklyCtx = document.getElementById('weeklyProgressChart').getContext('2d');
+            new Chart(weeklyCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ nutrition_stats.weekly_labels | tojson }},
+                    datasets: [{
+                        label: 'Calories',
+                        data: {{ nutrition_stats.weekly_calories | tojson }},
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Nutrient Distribution Chart
+            const nutrientCtx = document.getElementById('nutrientDistributionChart').getContext('2d');
+            new Chart(nutrientCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Protein', 'Carbs', 'Fat'],
+                    datasets: [{
+                        data: [
+                            {{ nutrition_stats.daily_protein }},
+                            {{ nutrition_stats.daily_carbs }},
+                            {{ nutrition_stats.daily_fat }}
+                        ],
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Check authentication on page load
+        checkAuth();
+        
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', initCharts);
+    </script>
+</body>
+</html> 
