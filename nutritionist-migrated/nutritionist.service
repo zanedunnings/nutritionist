@@ -1,0 +1,18 @@
+[Unit]
+Description=Nutritionist App
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/nutritionist-migrated
+Environment="PATH=/root/nutritionist-migrated/venv/bin"
+Environment="PYTHONPATH=/root/nutritionist-migrated"
+ExecStart=/root/nutritionist-migrated/venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=nutritionist
+
+[Install]
+WantedBy=multi-user.target 

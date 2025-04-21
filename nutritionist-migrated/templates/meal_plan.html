@@ -1,42 +1,413 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold">Meal Plan</h1>
-        <button onclick="generateMealPlan()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-            Generate New Plan
-        </button>
+<style>
+.meal-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.meal-title {
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.meal-description {
+    color: #6B7280;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 12px;
+    background: #F9FAFB;
+    border-radius: 8px;
+}
+
+.macro-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.macro-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.macro-data {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.macro-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.macro-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+}
+
+.ingredients-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 16px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #6B7280;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ingredients-button:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.ingredients-popup {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 8px);
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #E5E7EB;
+    z-index: 10;
+}
+
+.ingredients-popup.show {
+    display: block;
+}
+
+.ingredients-popup-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.ingredients-list {
+    font-size: 0.875rem;
+    color: #6B7280;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.ingredients-list li {
+    position: relative;
+    padding-left: 12px;
+}
+
+.ingredients-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #9CA3AF;
+}
+
+.ingredients-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 20px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    transform: rotate(45deg);
+    border-right: 1px solid #E5E7EB;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.progress-overview {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+}
+
+.progress-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.progress-item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.progress-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: -4px;
+}
+
+.completion-ring {
+    position: relative;
+    width: 36px;
+    height: 36px;
+}
+
+.completion-ring svg {
+    transform: rotate(-90deg);
+}
+
+.completion-ring circle {
+    fill: none;
+    stroke-width: 3;
+}
+
+.completion-ring .bg {
+    stroke: #E5E7EB;
+}
+
+.completion-ring .progress {
+    stroke: #3B82F6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.completion-ring.calories .progress {
+    stroke: #EF4444;
+}
+
+.completion-ring.protein .progress {
+    stroke: #8B5CF6;
+}
+
+.completion-ring.carbs .progress {
+    stroke: #F59E0B;
+}
+
+.completion-ring.fats .progress {
+    stroke: #10B981;
+}
+
+.completion-ring .percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: #6B7280;
+}
+
+.weight-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.weight-stats {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.weight-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #059669;
+}
+
+.weight-label {
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.weight-goal {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.chat-button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #3B82F6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 50;
+}
+
+.chat-button:hover {
+    transform: scale(1.05);
+    background: #2563EB;
+    box-shadow: 0 8px 12px -1px rgba(0, 0, 0, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+}
+
+.chat-button svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.chat-button.new-message {
+    animation: pulse 2s infinite;
+}
+</style>
+
+<div class="container mx-auto px-8 py-8 max-w-6xl">
+    <!-- Progress Overview -->
+    <div class="progress-overview">
+        <div class="progress-grid">
+            <div class="progress-item">
+                <div class="progress-label">Calories</div>
+                <div class="progress-value">2,100</div>
+                <div class="completion-ring calories">
+                    <svg width="36" height="36">
+                        <circle class="bg" cx="18" cy="18" r="16" />
+                        <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="25.13" />
+                    </svg>
+                    <div class="percentage">75%</div>
+                </div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-label">Protein</div>
+                <div class="progress-value">160g</div>
+                <div class="completion-ring protein">
+                    <svg width="36" height="36">
+                        <circle class="bg" cx="18" cy="18" r="16" />
+                        <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="20.11" />
+                    </svg>
+                    <div class="percentage">80%</div>
+                </div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-label">Carbs</div>
+                <div class="progress-value">220g</div>
+                <div class="completion-ring carbs">
+                    <svg width="36" height="36">
+                        <circle class="bg" cx="18" cy="18" r="16" />
+                        <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="35.19" />
+                    </svg>
+                    <div class="percentage">65%</div>
+                </div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-label">Fats</div>
+                <div class="progress-value">70g</div>
+                <div class="completion-ring fats">
+                    <svg width="36" height="36">
+                        <circle class="bg" cx="18" cy="18" r="16" />
+                        <circle class="progress" cx="18" cy="18" r="16" stroke-dasharray="100.53" stroke-dashoffset="30.16" />
+                    </svg>
+                    <div class="percentage">70%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="weight-progress">
+            <div class="weight-stats">
+                <div class="weight-value">15 lbs</div>
+                <div class="weight-label">lost so far</div>
+            </div>
+            <div class="weight-goal">
+                <div class="weight-value">5 lbs</div>
+                <div class="weight-label">until goal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center mb-8 px-2">
+        <h1 class="text-2xl font-medium text-gray-900">Today's Nutrition Plan</h1>
+        <div class="w-[300px] h-[600px] border border-red-500">
+            <!-- Debug message to check if this div is rendering -->
+            <div class="text-sm text-gray-500 mb-2">Image container</div>
+            <img src="/static/images/iphone.png" alt="iPhone Preview" class="w-full h-full object-contain">
+        </div>
     </div>
 
     <div id="loading" class="hidden">
         <div class="flex justify-center items-center">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-            <span class="ml-2">Generating meal plan...</span>
+            <span class="ml-2">Preparing your meals...</span>
         </div>
     </div>
 
     <div id="meal-plan" class="space-y-8">
-        <!-- Overview section -->
-        <div id="overview" class="bg-white rounded-lg shadow p-6 hidden">
-            <h2 class="text-xl font-semibold mb-4">Overview</h2>
-            <div id="overview-content" class="prose max-w-none"></div>
+        <!-- No meal plan message -->
+        <div id="no-meal-plan" class="hidden bg-white rounded-lg shadow p-6 text-center">
+            <h2 class="text-xl font-medium mb-4">No meals planned yet</h2>
+            <p class="text-gray-600 mb-4">Let's get you started with some delicious and healthy meals!</p>
+            <button onclick="generateMealPlan()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-medium">
+                Plan my meals
+            </button>
         </div>
 
         <!-- Daily plans section -->
-        <div id="daily-plans" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="daily-plans" class="grid grid-cols-1 gap-6">
             <!-- Daily plans will be loaded here -->
-        </div>
-
-        <!-- Grocery list section -->
-        <div id="grocery-list" class="bg-white rounded-lg shadow p-6 hidden">
-            <h2 class="text-xl font-semibold mb-4">Grocery List</h2>
-            <div id="grocery-list-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Grocery list will be loaded here -->
-            </div>
         </div>
     </div>
 </div>
+
+<!-- Chat Button -->
+<button class="chat-button" onclick="toggleChat()" aria-label="Open chat">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+    </svg>
+</button>
 
 <script>
 function getElementOrThrow(id) {
@@ -47,129 +418,175 @@ function getElementOrThrow(id) {
     return element;
 }
 
+function toggleIngredients(mealId) {
+    const popup = document.getElementById(`ingredients-${mealId}`);
+    const allPopups = document.querySelectorAll('.ingredients-popup');
+    
+    // Close all other popups
+    allPopups.forEach(p => {
+        if (p !== popup) {
+            p.classList.remove('show');
+        }
+    });
+    
+    // Toggle current popup
+    popup.classList.toggle('show');
+}
+
+// Close popups when clicking outside
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.ingredients-button') && !event.target.closest('.ingredients-popup')) {
+        const allPopups = document.querySelectorAll('.ingredients-popup');
+        allPopups.forEach(popup => popup.classList.remove('show'));
+    }
+});
+
+function displayMealPlan(plan) {
+    try {
+        const noMealPlan = getElementOrThrow('no-meal-plan');
+        const dailyPlans = getElementOrThrow('daily-plans');
+
+        if (!plan || !plan.daily_plans || Object.keys(plan.daily_plans).length === 0) {
+            noMealPlan.classList.remove('hidden');
+            dailyPlans.classList.add('hidden');
+            return;
+        }
+
+        noMealPlan.classList.add('hidden');
+        dailyPlans.classList.remove('hidden');
+
+        // Display daily plans
+        let dailyPlansHtml = '';
+        let mealCounter = 0;
+        
+        if (plan.daily_plans) {
+            for (const [day, meals] of Object.entries(plan.daily_plans)) {
+                dailyPlansHtml += `
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h2 class="text-lg font-medium mb-6 capitalize text-gray-700">${day}</h2>
+                        <div class="space-y-4">
+                            ${Object.entries(meals).map(([mealType, details], index) => {
+                                mealCounter++;
+                                const mealId = `meal-${mealCounter}`;
+                                return `
+                                    <div class="meal-card">
+                                        <h3 class="meal-title capitalize">${mealType}</h3>
+                                        <p class="meal-description">${details.description || ''}</p>
+                                        
+                                        <div class="macro-grid">
+                                            <div class="macro-item">
+                                                <div class="macro-icon">🔥</div>
+                                                <div class="macro-data">
+                                                    <span class="macro-label">Calories</span>
+                                                    <span class="macro-value">${details.macros?.calories || '0'} kcal</span>
+                                                </div>
+                                            </div>
+                                            <div class="macro-item">
+                                                <div class="macro-icon">🥩</div>
+                                                <div class="macro-data">
+                                                    <span class="macro-label">Protein</span>
+                                                    <span class="macro-value">${details.macros?.protein || '0'}g</span>
+                                                </div>
+                                            </div>
+                                            <div class="macro-item">
+                                                <div class="macro-icon">🍚</div>
+                                                <div class="macro-data">
+                                                    <span class="macro-label">Carbs</span>
+                                                    <span class="macro-value">${details.macros?.carbs || '0'}g</span>
+                                                </div>
+                                            </div>
+                                            <div class="macro-item">
+                                                <div class="macro-icon">🥑</div>
+                                                <div class="macro-data">
+                                                    <span class="macro-label">Fats</span>
+                                                    <span class="macro-value">${details.macros?.fat || '0'}g</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        ${details.ingredients ? `
+                                            <button class="ingredients-button" onclick="toggleIngredients('${mealId}')">
+                                                <span>Recipe</span>
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div id="ingredients-${mealId}" class="ingredients-popup">
+                                                <div class="ingredients-popup-title">Recipe</div>
+                                                <ul class="ingredients-list">
+                                                    ${details.ingredients.map(ingredient => `
+                                                        <li>${ingredient}</li>
+                                                    `).join('')}
+                                                </ul>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        dailyPlans.innerHTML = dailyPlansHtml;
+    } catch (error) {
+        console.error('Error displaying meal plan:', error);
+        showError('Failed to load your meals. Please try again.');
+    }
+}
+
 async function generateMealPlan() {
     try {
         const loading = getElementOrThrow('loading');
-        const mealPlan = getElementOrThrow('meal-plan');
-        
         loading.classList.remove('hidden');
         
         const response = await fetch('/api/meal-plan/generate', {
             method: 'POST',
-            credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         });
         
-        const data = await response.json();
-        
         if (!response.ok) {
-            throw new Error(data.detail || 'Failed to generate meal plan');
+            throw new Error('Failed to generate meal plan');
         }
         
-        displayMealPlan(data);
+        const plan = await response.json();
+        displayMealPlan(plan);
     } catch (error) {
-        console.error('Error:', error);
-        const mealPlan = getElementOrThrow('meal-plan');
-        mealPlan.innerHTML = `
-            <div class="col-span-full text-center text-red-500">
-                ${error.message || 'Failed to generate meal plan. Please try again.'}
-            </div>
-        `;
+        console.error('Error generating meal plan:', error);
+        showError('Failed to generate meal plan. Please try again.');
     } finally {
         const loading = getElementOrThrow('loading');
         loading.classList.add('hidden');
     }
 }
 
-function displayMealPlan(plan) {
-    try {
-        // Display overview if available
-        const overview = getElementOrThrow('overview');
-        const overviewContent = getElementOrThrow('overview-content');
-        if (plan.overview) {
-            overview.classList.remove('hidden');
-            overviewContent.innerHTML = plan.overview;
-        } else {
-            overview.classList.add('hidden');
-        }
-
-        // Display daily plans
-        const dailyPlans = getElementOrThrow('daily-plans');
-        let dailyPlansHtml = '';
-        
-        if (plan.daily_plans) {
-            for (const [day, meals] of Object.entries(plan.daily_plans)) {
-                dailyPlansHtml += `
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h2 class="text-xl font-semibold mb-4 capitalize">${day}</h2>
-                        <div class="space-y-4">
-                            ${Object.entries(meals).map(([meal, details]) => `
-                                <div>
-                                    <h3 class="font-medium capitalize">${meal}</h3>
-                                    <p class="text-gray-600">${details}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-        }
-        dailyPlans.innerHTML = dailyPlansHtml;
-
-        // Display grocery list if available
-        const groceryList = getElementOrThrow('grocery-list');
-        const groceryListContent = getElementOrThrow('grocery-list-content');
-        if (plan.grocery_list) {
-            groceryList.classList.remove('hidden');
-            let groceryListHtml = '';
-            
-            for (const [category, items] of Object.entries(plan.grocery_list)) {
-                groceryListHtml += `
-                    <div>
-                        <h3 class="font-medium capitalize mb-2">${category}</h3>
-                        <ul class="list-disc pl-4">
-                            ${items.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-            
-            groceryListContent.innerHTML = groceryListHtml;
-        } else {
-            groceryList.classList.add('hidden');
-        }
-    } catch (error) {
-        console.error('Error displaying meal plan:', error);
-        const mealPlan = getElementOrThrow('meal-plan');
-        mealPlan.innerHTML = `
-            <div class="col-span-full text-center text-red-500">
-                Error displaying meal plan: ${error.message}
-            </div>
-        `;
-    }
+function showError(message) {
+    // You can implement this to show error messages to the user
+    console.error(message);
 }
 
 // Load meal plan on page load
-document.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('load', async () => {
     try {
-        const response = await fetch('/api/meal-plan', {
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
+        const response = await fetch('/api/meal-plan');
         if (response.ok) {
-            const data = await response.json();
-            if (data) {
-                displayMealPlan(data);
-            }
+            const plan = await response.json();
+            displayMealPlan(plan);
+        } else {
+            displayMealPlan(null);
         }
     } catch (error) {
         console.error('Error loading meal plan:', error);
+        showError('Failed to load meal plan. Please try again.');
     }
 });
+
+function toggleChat() {
+    // You can implement the chat toggle functionality here
+    console.log('Chat button clicked');
+}
 </script>
-{% endblock %} 
+{% endblock %}

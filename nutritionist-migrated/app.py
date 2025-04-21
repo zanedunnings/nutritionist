@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 from routes.auth import router as auth_router
 from routes.meal_plan import router as meal_plan_router
 from routes.main import router as main_router
+from routes.waitlist import router as waitlist_router
 
 # Import configuration
 from config import DATABASE_URL, PROJECT_NAME
@@ -60,17 +61,23 @@ def get_db():
 
 # Set up templates
 templates = Jinja2Templates(directory="templates")
+templates.env.globals["url_for"] = lambda name, **params: app.url_path_for(name, **params)
 
 # Include routers
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(meal_plan_router, prefix="/api", tags=["meal-plan"])
 app.include_router(main_router, prefix="/app", tags=["main"])
+app.include_router(waitlist_router, prefix="/api", tags=["waitlist"])
 
-# Root endpoint - redirect to landing page
+# Root endpoint - serve landing page
 @app.get("/")
-async def root():
-    from fastapi.responses import RedirectResponse
-    return RedirectResponse(url="/landing")
+async def root(request: Request):
+    return templates.TemplateResponse("landing.html", {"request": request})
+
+# Landing page endpoint
+@app.get("/landing")
+async def landing(request: Request):
+    return templates.TemplateResponse("landing.html", {"request": request})
 
 # Health check endpoint
 @app.get("/health")

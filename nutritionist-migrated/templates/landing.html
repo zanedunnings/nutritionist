@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutritionist AI - Your Personal Health Coach</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);
+        }
+        .feature-card {
+            transition: transform 0.2s ease-in-out;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-2">
+                        <span class="text-xl font-bold gradient-text">Nutritionist AI</span>
+                    </a>
+                    <div class="hidden md:flex md:ml-10 md:space-x-8">
+                        <a href="#features" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Features</a>
+                        <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">How it Works</a>
+                        <a href="#pricing" class="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Pricing</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/auth/login" class="hidden md:inline-flex text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium">Sign In</a>
+                    <a href="#waitlist" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Join Waitlist
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative hero-gradient pt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+            <div class="flex flex-col lg:flex-row items-center justify-between">
+                <div class="lg:w-1/2 lg:pr-12">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                        Your Personal<br/>
+                        <span class="gradient-text">AI Health Coach</span>
+                    </h1>
+                    <p class="mt-6 text-xl text-gray-600 leading-relaxed max-w-2xl">
+                        Get the expertise of a Hollywood nutritionist in your pocket. Personalized meal plans, real-time adjustments, and smart grocery shopping - all tailored to your unique goals.
+                    </p>
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                        <a href="#waitlist" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 md:text-lg">
+                            Join the Waitlist
+                            <svg class="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </a>
+                        <a href="#features" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 md:text-lg">
+                            Learn More
+                        </a>
+                    </div>
+                    <div class="mt-8 flex items-center space-x-4">
+                        <div class="flex -space-x-2">
+                            <img class="w-8 h-8 rounded-full border-2 border-white" src="https://randomuser.me/api/portraits/women/1.jpg" alt="">
+                            <img class="w-8 h-8 rounded-full border-2 border-white" src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+                            <img class="w-8 h-8 rounded-full border-2 border-white" src="https://randomuser.me/api/portraits/women/2.jpg" alt="">
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Joined by <span class="font-semibold text-gray-900">2,000+</span> health enthusiasts
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 mt-12 lg:mt-0">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl blur-3xl opacity-20"></div>
+                        <img src="{{ url_for('static', path='images/iphone.png') }}" alt="Nutritionist AI App Preview" class="relative rounded-3xl shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-base font-semibold text-indigo-600 tracking-wide uppercase">Features</h2>
+                <p class="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
+                    Everything You Need to Succeed
+                </p>
+                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+                    Our AI-powered platform provides all the tools you need to achieve your health and fitness goals.
+                </p>
+            </div>
+
+            <div class="mt-16">
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <!-- Feature 1 -->
+                    <div class="feature-card relative bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900">Personalized Meal Planning</h3>
+                        <p class="mt-2 text-gray-500">
+                            Get meal plans tailored to your goals, preferences, and dietary restrictions. Our AI learns your taste and adjusts accordingly.
+                        </p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="feature-card relative bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900">Smart Time & Money Saving</h3>
+                        <p class="mt-2 text-gray-500">
+                            Save time and money with intelligent meal planning that minimizes waste and maximizes your grocery budget.
+                        </p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="feature-card relative bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900">Real-Time Adjustments</h3>
+                        <p class="mt-2 text-gray-500">
+                            Your plan adapts in real-time based on your progress and lifestyle changes, just like a personal nutritionist.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="bg-gray-50 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900">
+                    Loved by Health Enthusiasts
+                </h2>
+                <p class="mt-4 text-xl text-gray-500">
+                    Here's what our users are saying about their journey with Nutritionist AI.
+                </p>
+            </div>
+            <div class="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Testimonial 1 -->
+                <div class="bg-white rounded-2xl shadow-sm p-8">
+                    <div class="flex items-center">
+                        <img class="h-12 w-12 rounded-full" src="https://randomuser.me/api/portraits/women/3.jpg" alt="">
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-gray-900">Sarah Johnson</h4>
+                            <p class="text-gray-500">Fitness Enthusiast</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-gray-600">
+                        "This app has completely transformed my approach to nutrition. The personalized meal plans are amazing!"
+                    </p>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="bg-white rounded-2xl shadow-sm p-8">
+                    <div class="flex items-center">
+                        <img class="h-12 w-12 rounded-full" src="https://randomuser.me/api/portraits/men/2.jpg" alt="">
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-gray-900">Michael Chen</h4>
+                            <p class="text-gray-500">Tech Professional</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-gray-600">
+                        "The AI recommendations are spot-on, and the app saves me so much time planning meals and shopping."
+                    </p>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="bg-white rounded-2xl shadow-sm p-8">
+                    <div class="flex items-center">
+                        <img class="h-12 w-12 rounded-full" src="https://randomuser.me/api/portraits/women/4.jpg" alt="">
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-gray-900">Emma Davis</h4>
+                            <p class="text-gray-500">Busy Parent</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-gray-600">
+                        "Finally, an app that understands my dietary needs and helps me stay on track with my health goals."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Waitlist Section -->
+    <div id="waitlist" class="bg-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-gray-900 sm:text-4xl">
+                    Be the First to Experience
+                </h2>
+                <p class="mt-4 text-xl text-gray-500">
+                    Join our exclusive waitlist and get early access to the future of personalized nutrition.
+                </p>
+                <div class="mt-8">
+                    <form id="waitlist-form" class="sm:flex justify-center">
+                        <div class="min-w-0 flex-1">
+                            <label for="email" class="sr-only">Email address</label>
+                            <input id="email" type="email" required class="block w-full px-4 py-3 text-base rounded-lg border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Enter your email">
+                        </div>
+                        <div class="mt-3 sm:mt-0 sm:ml-3">
+                            <button type="submit" class="block w-full px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:px-10">
+                                Join Waitlist
+                            </button>
+                        </div>
+                    </form>
+                    <p class="mt-3 text-sm text-gray-500">
+                        Join <span id="count" class="font-semibold text-gray-900">0</span> others on the waitlist
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Waitlist form submission
+        document.getElementById('waitlist-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            
+            try {
+                const response = await fetch('/api/waitlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+                
+                if (response.ok) {
+                    alert('Thanks for joining the waitlist!');
+                    document.getElementById('email').value = '';
+                    updateWaitlistCount();
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        });
+
+        // Update waitlist count
+        async function updateWaitlistCount() {
+            try {
+                const response = await fetch('/api/waitlist/count');
+                const data = await response.json();
+                document.getElementById('count').textContent = data.count;
+            } catch (error) {
+                console.error('Error fetching waitlist count:', error);
+            }
+        }
+
+        // Initial count update
+        updateWaitlistCount();
+    </script>
+</body>
+</html> 

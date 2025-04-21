@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
-from .database import Base
+from datetime import datetime
+from .base import Base
 import bcrypt
 import logging
 
@@ -15,11 +16,11 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    meal_plans = relationship("MealPlan", back_populates="user", cascade="all, delete-orphan")
+    meal_plans = relationship("MealPlan", back_populates="user")
 
     def verify_password(self, plain_password: str) -> bool:
         try:
