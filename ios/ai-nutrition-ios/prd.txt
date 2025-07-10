@@ -36,11 +36,6 @@ Planned Features
    - Meal prep instructions
    - Shopping list optimization
 
-2. Social Features
-   - Community sharing
-   - Progress sharing
-   - Recipe sharing
-   - Achievement system
 
 3. Advanced Analytics
    - Trend analysis
@@ -86,62 +81,10 @@ Distribution Channels:
    - Health food stores
    - Wellness programs
 
-Marketing Messages & Taglines
-----------------------------
-Hero Messages:
-- "Transform your eating habits with AI-powered meal planning"
-- "Your personal nutritionist, available 24/7"
-- "Smart meal planning for a healthier you"
-- "Take control of your nutrition journey"
 
-Feature Highlights:
-- "Personalized meal plans that adapt to your goals"
-- "Track your progress with beautiful, intuitive visualizations"
-- "Never wonder what to eat again - your AI nutritionist has you covered"
-- "From meal planning to grocery list - all in one place"
-
-Value Propositions:
-- "Save time, eat better, reach your goals"
-- "Nutrition made simple and personal"
-- "Your path to better health starts with better meals"
-- "Smart eating for a smarter you"
-
-Call-to-Action Messages:
-- "Start your nutrition journey today"
-- "Get your personalized meal plan now"
-- "Join thousands of people eating better"
-- "Take the first step to better health"
-
-Marketing Channels:
-1. Digital Marketing
-   - Social media campaigns
-   - Content marketing
-   - Email newsletters
-   - Influencer partnerships
-   - SEO optimization
-
-2. Community Building
-   - User success stories
-   - Recipe sharing
-   - Progress challenges
-   - Expert Q&A sessions
-
-3. Educational Content
-   - Nutrition guides
-   - Meal prep tutorials
-   - Success tips
-   - Expert interviews
-
-4. Partnerships
-   - Health and wellness brands
-   - Fitness influencers
-   - Nutrition experts
-   - Health food companies
-
-Growth Metrics:
-- Monthly Active Users (MAU)
-- User retention rate
-- Feature adoption rate
-- User satisfaction score
-- Conversion rate to premium
-- Social sharing metrics 
+iOS App
+Main page will be very simple. It has three numbers:
+ - calories saved so far this Week
+ - calories left today
+ - protein left for today.
+ - photo button to send to ai analysis

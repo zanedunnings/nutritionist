@@ -19,6 +19,7 @@ from routes.auth import router as auth_router
 from routes.meal_plan import router as meal_plan_router
 from routes.main import router as main_router
 from routes.waitlist import router as waitlist_router
+from routes.nutrition import router as nutrition_router
 
 # Import configuration
 from config import DATABASE_URL, PROJECT_NAME
@@ -68,6 +69,7 @@ app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(meal_plan_router, prefix="/api", tags=["meal-plan"])
 app.include_router(main_router, prefix="/app", tags=["main"])
 app.include_router(waitlist_router, prefix="/api", tags=["waitlist"])
+app.include_router(nutrition_router, prefix="/api/nutrition", tags=["nutrition"])
 
 # Root endpoint - serve landing page
 @app.get("/")

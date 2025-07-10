@@ -14,6 +14,22 @@ load_dotenv()
 # Get meal plan database path
 MEAL_PLAN_DB = os.getenv("MEAL_PLAN_DB", "data/meal_plans.db")
 
+# Global client variable to avoid repeated initialization
+_anthropic_client = None
+
+def get_anthropic_client():
+    """Get Anthropic client instance with proper error handling"""
+    global _anthropic_client
+    if _anthropic_client is None:
+        try:
+            anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
+            if not anthropic_api_key:
+                raise ValueError("ANTHROPIC_API_KEY environment variable not set")
+            _anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
+        except Exception as e:
+            raise ValueError(f"Failed to initialize Anthropic client: {e}")
+    return _anthropic_client
+
 def get_week_key():
     today = datetime.now()
     sunday = today - timedelta(days=today.weekday() + 1)
@@ -48,12 +64,10 @@ def add_modification(db: Session, week_key: str, modification: dict):
     db.commit()
 
 def call_claude(prompt, model="claude-3-5-sonnet-20241022", max_tokens=8000, temperature=0.7):
-    anthropic_api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not anthropic_api_key:
-        raise ValueError("ANTHROPIC_API_KEY environment variable not set")
-    client = anthropic.Anthropic(api_key=anthropic_api_key)
-    
+    """Call Claude with proper error handling and client initialization"""
     try:
+        client = get_anthropic_client()
+        
         response = client.messages.create(
             model=model,
             max_tokens=max_tokens,

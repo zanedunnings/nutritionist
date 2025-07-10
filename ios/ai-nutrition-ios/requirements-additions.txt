@@ -1,0 +1,12 @@
+# Add these to your existing requirements.txt file
+
+# Image processing and file handling
+python-multipart==0.0.6
+Pillow==10.0.1
+
+# OpenAI API
+openai==1.3.0
+
+# Already likely in your FastAPI project, but just in case:
+# fastapi==0.104.1
+# uvicorn==0.24.0 
