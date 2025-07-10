@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 _anthropic_client = None
 
 def get_anthropic_client():
-    """Get Anthropic client instance with proper error handling for version 0.7.7"""
+    """Get Anthropic client instance with proper error handling for modern API"""
     global _anthropic_client
     if _anthropic_client is None:
         try:
             if not ANTHROPIC_API_KEY:
                 raise ValueError("ANTHROPIC_API_KEY environment variable not set")
-            # For anthropic 0.7.7, initialize client without the 'proxies' parameter
+            # Modern Anthropic client initialization
             _anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         except Exception as e:
             logger.error(f"Failed to initialize Anthropic client: {e}")
@@ -39,7 +39,7 @@ class NutritionAnalysisError(Exception):
 
 async def analyze_food_image(image_data: bytes, content_type: str) -> Dict[str, Any]:
     """
-    Analyze a food image using Anthropic Claude Vision API (0.7.7 format)
+    Analyze a food image using Anthropic Claude Vision API (modern format)
     
     Args:
         image_data: Binary image data
@@ -62,42 +62,55 @@ async def analyze_food_image(image_data: bytes, content_type: str) -> Dict[str, 
         # Convert to base64
         base64_image = base64.b64encode(image_data).decode('utf-8')
         
-        # Prepare the prompt for better nutrition analysis using the legacy format
-        prompt = f"""
-Human: I'm going to show you an image of food. Please analyze it and return ONLY a JSON response with the following structure:
-{{
+        # Determine media type for Claude
+        media_type = content_type
+        if media_type not in ["image/jpeg", "image/png", "image/gif", "image/webp"]:
+            media_type = "image/jpeg"  # Default fallback
+        
+        # Get client instance
+        client = get_anthropic_client()
+        
+        # Call Anthropic Claude Vision API using the modern Messages API
+        response = client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=500,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """I'm going to show you an image of food. Please analyze it and return ONLY a JSON response with the following structure:
+{
     "calories": <number>,
     "description": "<detailed description of the food and estimated portion size>",
     "protein": <grams of protein>,
     "carbs": <grams of carbohydrates>,
     "fat": <grams of fat>
-}}
+}
 
-Be as accurate as possible with portion size estimation. If you can't clearly identify the food, return calories as 0 and describe what you can see. Return ONLY the JSON, no other text.
-
-Image data: data:{content_type};base64,{base64_image}
-"""
-        
-        # Get client instance
-        client = get_anthropic_client()
-        
-        # Call Anthropic Claude Vision API using the 0.7.7 format
-        response = client.completions.create(
-            model="claude-3-haiku-20240307",
-            max_tokens=500,
-            prompt=prompt
+Be as accurate as possible with portion size estimation. If you can't clearly identify the food, return calories as 0 and describe what you can see. Return ONLY the JSON, no other text."""
+                        },
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": media_type,
+                                "data": base64_image
+                            }
+                        }
+                    ]
+                }
+            ]
         )
         
-        # Parse response - handle both old and new response formats
+        # Parse response from modern API
         content = None
         if hasattr(response, 'content') and response.content:
             if isinstance(response.content, list) and len(response.content) > 0:
                 content = response.content[0].text if hasattr(response.content[0], 'text') else str(response.content[0])
             else:
                 content = str(response.content)
-        elif hasattr(response, 'completion'):
-            # Fallback for older API format
-            content = response.completion
         
         if not content:
             raise NutritionAnalysisError("No response from AI model", "AI_NO_RESPONSE")

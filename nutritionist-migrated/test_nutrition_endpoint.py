@@ -32,22 +32,50 @@ def login(username: str, password: str) -> str:
     }
     
     print(f"🔐 Logging in as {username}...")
-    response = requests.post(LOGIN_URL, data=login_data)
     
-    if response.status_code == 200:
-        token_data = response.json()
-        access_token = token_data.get("access_token")
-        if access_token:
-            print("✅ Login successful!")
-            return access_token
-        else:
-            print("❌ Login failed: No access token in response")
-            print(f"Response: {response.text}")
-            sys.exit(1)
-    else:
-        print(f"❌ Login failed: {response.status_code}")
-        print(f"Response: {response.text}")
-        sys.exit(1)
+    # Try JSON format first
+    try:
+        response = requests.post(LOGIN_URL, json=login_data, headers={"Content-Type": "application/json"})
+        if response.status_code == 200:
+            token_data = response.json()
+            access_token = token_data.get("access_token")
+            if access_token:
+                print("✅ Login successful!")
+                return access_token
+    except Exception as e:
+        print(f"JSON login failed: {e}")
+    
+    # Try form data format as fallback
+    try:
+        response = requests.post(LOGIN_URL, data=login_data)
+        if response.status_code == 200:
+            token_data = response.json()
+            access_token = token_data.get("access_token")
+            if access_token:
+                print("✅ Login successful!")
+                return access_token
+    except Exception as e:
+        print(f"Form data login failed: {e}")
+    
+    # If both methods fail, show error
+    print(f"❌ Login failed: {response.status_code}")
+    print(f"Response: {response.text}")
+    
+    # Try to get more info about available endpoints
+    try:
+        # Check if the auth endpoint exists at all
+        test_response = requests.get(f"{BASE_URL}/auth/")
+        print(f"Auth endpoint test: {test_response.status_code}")
+        
+        # Try alternative login paths
+        alt_login_url = f"{BASE_URL}/token"
+        alt_response = requests.post(alt_login_url, data=login_data)
+        print(f"Alternative login (/token): {alt_response.status_code}")
+        
+    except Exception as e:
+        print(f"Endpoint discovery failed: {e}")
+    
+    sys.exit(1)
 
 def test_nutrition_endpoint(image_path: str, access_token: str):
     """

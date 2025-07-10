@@ -39,9 +39,17 @@ app.add_middleware(
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Set up database
+# Set up database with proper SQLite threading configuration
 Base = declarative_base()
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    # Fix SQLite threading issues
+    connect_args={"check_same_thread": False},
+    # Pool settings for better async handling
+    pool_pre_ping=True,
+    pool_recycle=300,
+    echo=False  # Set to True for SQL debugging
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Import models

@@ -21,8 +21,7 @@ router = APIRouter()
 
 @router.post("/analyze-image")
 async def analyze_food_image_endpoint(
-    image: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    image: UploadFile = File(...)
 ):
     """
     Analyze a food image and return calorie and nutrition information
